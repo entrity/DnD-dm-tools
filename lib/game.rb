@@ -1,5 +1,6 @@
 require 'pry'
 require './lib/encounter'
+require './lib/roll'
 
 class Game
   def initialize fpath
@@ -11,8 +12,8 @@ class Game
     File.write @fpath, Marshal.dump(self)
   end
 
-  def encounter
-
+  def encounter difficulty, terrain
+    Encounter.new difficulty, terrain, @pcs
   end
 
   def increment_fpath
@@ -24,7 +25,18 @@ class Game
     end
   end
 
+  def note text
+    @notes ||= []
+    @notes << text
+  end
+
   def start
     binding.pry
+  end
+
+  # Roll
+  def r command=nil
+    command = gets if command.nil?
+    Roll.new(command).to_s
   end
 end

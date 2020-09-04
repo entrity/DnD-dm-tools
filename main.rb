@@ -4,7 +4,7 @@ require 'json'
 require './lib/game'
 
 def load_monsters
-  $monsters = Dir['data/monsters*'].reduce [] do |acc, fpath|
+  $monsters ||= Dir['data/monsters*'].reduce [] do |acc, fpath|
     acc + JSON.parse(File.read fpath)['results']
   end
 end
