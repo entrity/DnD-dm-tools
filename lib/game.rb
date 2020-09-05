@@ -3,9 +3,11 @@ require './lib/encounter'
 require './lib/roll'
 
 class Game
+  attr_reader :party
+
   def initialize fpath
     @fpath = fpath # Attr overwritten if file exists s.t. file is not overwritten
-    @pcs = {}
+    @party = {}
   end
 
   def dump
@@ -13,7 +15,7 @@ class Game
   end
 
   def encounter difficulty, terrain
-    Encounter.new difficulty, terrain, @pcs
+    Encounter.new @party, difficulty, terrain
   end
 
   def increment_fpath
@@ -30,13 +32,13 @@ class Game
     @notes << text
   end
 
-  def start
-    binding.pry
-  end
-
   # Roll
   def r command=nil
     command = gets if command.nil?
     Roll.new(command).to_s
+  end
+
+  def start
+    binding.pry
   end
 end

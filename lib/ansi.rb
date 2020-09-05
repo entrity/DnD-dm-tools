@@ -53,5 +53,4 @@ module Ansi
   def self.underline text
     [fmt(UNDERLINE), text, fmt(UNDERLINE_OFF)].join
   end
-
 end

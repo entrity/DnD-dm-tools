@@ -5,3 +5,7 @@ end
 require './main.rb'
 
 load_monsters
+
+def strip_ansi text_w_ansi_codes
+  text_w_ansi_codes.to_s.gsub(/\e\[([;\d]+)?m/, '')
+end

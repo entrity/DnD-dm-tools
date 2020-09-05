@@ -8,7 +8,7 @@ class Roll
 
   def to_s
     color_string, white_string = parse_string
-    color_string
+    "#{eval white_string} = #{color_string}"
   end
 
   private
@@ -20,7 +20,7 @@ class Roll
         in_quote = nil if in_quote == token
         token
       elsif mat = token.match(/^(\d*)?d(\d+)$/)
-        MyPryConfig.roll_dice(*mat.captures.map(&:to_i)).join(' + ')
+        roll_dice(*mat.captures.map(&:to_i)).join(' + ')
       else # todo: should consider #{} interpolations
         in_quote = token if token =~ /^("|')$/
         token

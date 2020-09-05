@@ -21,7 +21,7 @@ describe 'Foe' do
   describe '#to_s' do
     it 'gives expected text' do
       puts subject.to_s
-      no_color_s = subject.to_s.gsub(/\e\[([;\d]+)?m/, '')
+      no_color_s = strip_ansi subject.to_s
       expect(no_color_s).to match /Kitsune cr 2 hp 49 ac 12 spd/
       expect(no_color_s).to match /str 8 dex 15 con 11 int 12 wis 77 cha 14/
       expect(no_color_s).to match /Actions/
