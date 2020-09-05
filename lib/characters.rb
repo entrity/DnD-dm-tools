@@ -5,10 +5,12 @@ class Character
     @attrs = attrs
   end
 
-  def melee
+  def mod attribute_score
+    ((attribute_score - 10) / 2).floor
   end
 
-  def ranged
+  def roll_initiative
+    Roll.new("d20 + #{mod(dex)}").value
   end
 
   def to_s
@@ -97,5 +99,5 @@ end
 class Monster < Foe
 end
 
-class Party
+class Party < Hash
 end
