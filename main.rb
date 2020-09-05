@@ -3,12 +3,6 @@
 require 'json'
 require './lib/game'
 
-def load_monsters
-  $monsters ||= Dir['data/monsters*'].reduce [] do |acc, fpath|
-    acc + JSON.parse(File.read fpath)['results']
-  end
-end
-
 if __FILE__ == $PROGRAM_NAME
   fpath = ARGV[0] || 'test'
   if fpath.nil?

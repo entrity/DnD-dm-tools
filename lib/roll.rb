@@ -2,13 +2,16 @@ class Roll
   # Critical success/failure colours
   COLORS = {20 => 32, 1 => 31}
 
+  attr_reader :value
+
   def initialize command
     @command = command
+    @color_string, @white_string = parse_string
+    @value = eval @white_string
   end
 
   def to_s
-    color_string, white_string = parse_string
-    "#{eval white_string} = #{color_string}"
+    "#{@value} = #{@color_string}"
   end
 
   private
@@ -20,7 +23,7 @@ class Roll
         in_quote = nil if in_quote == token
         token
       elsif mat = token.match(/^(\d*)?d(\d+)$/)
-        roll_dice(*mat.captures.map(&:to_i)).join(' + ')
+        roll_dice(*mat.captures.map(&:to_i))
       else # todo: should consider #{} interpolations
         in_quote = token if token =~ /^("|')$/
         token
@@ -31,10 +34,11 @@ class Roll
   end
 
     def roll_dice n, d
-    (0...[n,1].max).map do
+    rolls = (0...[n,1].max).map do
       value = 1 + rand(d)
       color = d == 20 ? COLORS.fetch(value, 33) : 0
       "\033[#{color}m#{value}\033[0m"
-    end
+    end.join(' + ')
+    "(#{rolls})"
   end
 end
