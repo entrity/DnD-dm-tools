@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe 'Foe' do
-  subject { Monster.new $monsters.first }
+  let(:monsters) { MonsterLibrary.new }
+  subject { Monster.new monsters['Kitsune'] }
 
   describe '.attr' do
     it 'makes getter (#wisdom) and alias (#wis)' do
@@ -23,7 +24,7 @@ describe 'Foe' do
       puts subject.to_s
       no_color_s = strip_ansi subject.to_s
       expect(no_color_s).to match /Kitsune cr 2 hp 49 ac 12 spd/
-      expect(no_color_s).to match /str 8 dex 15 con 11 int 12 wis 77 cha 14/
+      expect(no_color_s).to match /str 8 dex 15 con 11 int 12 wis 15 cha 14/
       expect(no_color_s).to match /Actions/
       expect(no_color_s).to match /Special abilities/
     end

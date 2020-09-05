@@ -34,6 +34,7 @@ class Game
 
   # Roll
   def r command=nil
+    binding.pry if command.nil?
     command = gets if command.nil?
     Roll.new(command).to_s
   end

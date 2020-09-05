@@ -9,8 +9,19 @@ class MonsterLibrary
     load_environments
   end
 
-  def [] name
-    @open5e_hash[name]
+  def [] name_or_idx
+    if name_or_idx.is_a? Fixnum
+      @open5e_array[name_or_idx]
+    else
+      @open5e_hash[name_or_idx]
+    end
+  end
+
+  # Return name + CR
+  def list
+    @open5e_array.map do |mon|
+      "#{mon['name']} (CR #{mon['challenge_rating']})"
+    end
   end
 
   def sample terrain=nil, strict=false
@@ -50,7 +61,6 @@ class MonsterLibrary
     # Get monsters from https://api.open5e.com/ files
     @open5e_array = Dir['data/open5e-monsters*'].reduce([]) do |acc, fpath|
       results = JSON.parse(File.read fpath)['results']
-      results.each { |m| m['challenge_rating'] = m['challenge_rating'].to_f }
       acc + results
     end
     @open5e_hash = @open5e_array.map {|m| [m['name'], m]}.to_h

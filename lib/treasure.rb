@@ -64,6 +64,7 @@ module Treasure
       when 91..97; [roll('2d6'), '50 gp gems', magic_items('f', '1d4')]
       when 98..99; [roll('2d4'), '25 gp art objects', magic_items('g')]
       when 100;    [roll('2d6'), '50 gp gems', magic_items('g')]
+      end
     elsif cr < 11
       puts [roll('2d6*100'), 'CP', roll('2d6*1000'), 'SP', roll('6d6*100'), 'GP', roll('3d6*10'), 'PP'].join ' '
       if d100 <= 4    ; []
@@ -175,12 +176,13 @@ module Treasure
 
   # Called only during startup
   def self.load_magic_items_table table_name
-    lines = File.read("data/magic-items-table-#{key}.tsv").split("\n")
+    lines = File.read("data/magic-items-table-#{table_name}.tsv").split("\n")
     lines.reduce([nil] * 100) do |acc, line|
       range, item = line.split(/\s*\t/)
       a, z = range.split('-').map(&:to_i)
       z ||= a
       (a..z).each {|i| acc[i] = item }
+      acc
     end
   end
 

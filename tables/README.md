@@ -5,7 +5,7 @@
 * Level (row)
 * Adjusted XP per Day per Character
 
-## Monster Stats by CR
+## Monster Stats by CR (DMG p.174)
 
 * CR
 * Proficiency Bonus
@@ -15,7 +15,7 @@
 * Damage/Round
 * Save DC
 
-## XP by CR
+## XP by CR (DMG p.275)
 
 * CR
 * XP

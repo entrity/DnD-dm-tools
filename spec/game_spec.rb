@@ -6,7 +6,7 @@ describe Game do
   describe '#r' do
     it 'raises no error' do
       roll = subject.r 'd20 + 4 + 3d6'
-      expect(strip_ansi roll).to match /^\d+ = \d+ \+ 4 \+ \d \+ \d \+ \d$/
+      expect(strip_ansi roll).to match /^\d+ = \(\d+\) \+ 4 \+ \(\d \+ \d \+ \d\)$/
     end
   end
 end

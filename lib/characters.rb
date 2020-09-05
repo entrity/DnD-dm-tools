@@ -5,6 +5,10 @@ class Character
     @attrs = attrs
   end
 
+  def cr
+    challenge_rating.to_f
+  end
+
   def mod attribute_score
     ((attribute_score - 10) / 2).floor
   end
@@ -88,6 +92,17 @@ class Character
 end
 
 class Pc < Character
+  attr_writer :name, :level
+
+  def initialize *args, **attrs
+    super attrs
+    @name, @level = args
+  end
+
+  def xp_threshold difficulty
+    table = Table['xp-thresholds-by-character-level.tsv']
+    table[@level - 1][difficulty - 1].to_i
+  end
 end
 
 class Npc < Character

@@ -1,12 +1,41 @@
 class Encounter
+  attr_reader :npcs, :party
+
   def initialize party
     @party = party
     @npcs = Set.new
   end
 
-  def self.random party, terrain, difficulty, n=nil
-    monster_klass = 
+  # DMG p.
+  def xp_for_difficulty difficulty
+    party_xp = @party.values.reduce(0) { |acc, pc|
+      acc + pc.xp_threshold(difficulty)
+    }
+
+    case difficulty
+    when EASY
+    when MEDIUM
+    when HARD
+    when DEADLY
+    else
+      raise RuntimeError.new("Unsupported difficulty #{difficulty}")
+    end
+  end
+  # Compute XP for difficulty for party
+  # Compute CR for XP DMG p.275
+
+  def self.random party, terrain, difficulty, opts={}
+    cr = opts[:cr] || max_cr_for_party_and_difficulty
+    cr /= multiplier(opts[:n]) if opts[:n]
     enc = new party
+    # Find monster with CR no greater than cr
+    monster_attrs = $monsters.sample terrain, opts[:strict], cr
+    if opts[:n].nil? # Compute n based on cr & difficulty
+      cr = monster_attrs['challenge_rating'].to_f
+
+    end
+    (1..n).each {|i| enc.npcs << Monster.new(monster_attrs) }
+    enc
   end
 
   # Roll initiative
@@ -22,7 +51,9 @@ class Encounter
     @npcs.each {|npc| @initiative[npc] = npc.roll_initiative }
   end
 
-  def multipliers number_of_monsters
+  # DMG p.82: Multiply the total XP of all the monsters in the encounter by
+  # the value given in the Encounter Multipliers table.
+  def multiplier number_of_monsters
     case number_of_monsters
     when 1; 1
     when 2; 1.5
@@ -33,15 +64,15 @@ class Encounter
     end
   end
 
+  # Return the next guy in the initiative
   def next
-
   end
 
   # Difficulty
-  EASY = :easy
-  MEDIUM = :medium
-  HARD = :hard
-  DEADLY = :deadly
+  EASY = 1
+  MEDIUM = 2
+  HARD = 3
+  DEADLY = 4
   # Terrain
   MOUNTAIN = "Mountain"
   UNDERDARK = "Underdark"
