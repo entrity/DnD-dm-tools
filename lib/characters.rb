@@ -9,6 +9,10 @@ class Character
     challenge_rating.to_f
   end
 
+  def inspect
+    "<#{self.class.name}:#{object_id} name \"#{name}\" cr #{challenge_rating}\>"
+  end
+
   def mod attribute_score
     ((attribute_score - 10) / 2).floor
   end
@@ -92,11 +96,15 @@ class Character
 end
 
 class Pc < Character
-  attr_writer :name, :level
+  attr_accessor :name, :level
 
   def initialize *args, **attrs
     super attrs
     @name, @level = args
+  end
+
+  def challenge_rating
+    @level
   end
 
   def xp_threshold difficulty

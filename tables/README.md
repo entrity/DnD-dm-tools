@@ -5,6 +5,13 @@
 * Level (row)
 * Adjusted XP per Day per Character
 
+## Encounter Multipliers (DMG p.82)
+
+Multiply the total XP of all the monsters in the encounter by the value given in the Encounter Multipliers table.
+
+* Number of Monsters
+* Multiplier
+
 ## Monster Stats by CR (DMG p.174)
 
 * CR
@@ -28,3 +35,4 @@
     * Medium
     * Hard
     * Deadly
+

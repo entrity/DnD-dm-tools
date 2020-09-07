@@ -1,71 +1,71 @@
 class Encounter
   attr_reader :npcs, :party
+  attr_reader :initiative_order
 
   def initialize party
     @party = party
     @npcs = Set.new
+    @initiative_cursor = 0
+    @initiative_order = []
   end
 
-  # DMG p.
-  def xp_for_difficulty difficulty
-    party_xp = @party.values.reduce(0) { |acc, pc|
-      acc + pc.xp_threshold(difficulty)
+  # Compute CR for party (DMG p.275)
+  def cr_for_party difficulty
+    party_xp_threshold = @party.values.sum {|pc| pc.xp_threshold(difficulty) }
+    # Find nearest XP match, return CR
+    cr, xp = Table['xp-by-cr.tsv'].min {|row_a, row_b|
+      delta_a, delta_b = [row_a, row_b].map {|row|
+        (row[1].to_i - party_xp_threshold).abs
+      }
+      delta_a <=> delta_b
     }
-
-    case difficulty
-    when EASY
-    when MEDIUM
-    when HARD
-    when DEADLY
-    else
-      raise RuntimeError.new("Unsupported difficulty #{difficulty}")
-    end
-  end
-  # Compute XP for difficulty for party
-  # Compute CR for XP DMG p.275
-
-  def self.random party, terrain, difficulty, opts={}
-    cr = opts[:cr] || max_cr_for_party_and_difficulty
-    cr /= multiplier(opts[:n]) if opts[:n]
-    enc = new party
-    # Find monster with CR no greater than cr
-    monster_attrs = $monsters.sample terrain, opts[:strict], cr
-    if opts[:n].nil? # Compute n based on cr & difficulty
-      cr = monster_attrs['challenge_rating'].to_f
-
-    end
-    (1..n).each {|i| enc.npcs << Monster.new(monster_attrs) }
-    enc
+    cr.to_f
   end
 
   # Roll initiative
-  def init name=nil, roll_value=nil
+  def init name_or_pc=nil, roll_value=nil
     @initiative ||= {}
     # Set pc roll
-    if name
-      pc = @party[name]
+    if x = name_or_pc
+      pc = x.is_a?(String) ? @party[x] : x
       return puts "No PC found for #{name}" if pc.nil?
       @initiative[pc] = roll_value
     end
     # Roll for npcs
     @npcs.each {|npc| @initiative[npc] = npc.roll_initiative }
-  end
-
-  # DMG p.82: Multiply the total XP of all the monsters in the encounter by
-  # the value given in the Encounter Multipliers table.
-  def multiplier number_of_monsters
-    case number_of_monsters
-    when 1; 1
-    when 2; 1.5
-    when 3..6; 2
-    when 7..10; 2.5
-    when 11..14; 3
-    else; 4
-    end
+    @initiative_order = @initiative.to_a.sort {|x| x[1]}.map {|x| x[0]}
   end
 
   # Return the next guy in the initiative
   def next
+    character = @initiative_order[@initiative_cursor]
+    @initiative_cursor += 1
+    @initiative_cursor = 0 if @initiative_cursor >= @initiative_order.length
+    character
+  end
+
+  # Compute XP for difficulty for party
+  def self.random party, terrain, difficulty, opts={}
+    enc = new party
+    cr = opts[:cr] || enc.cr_for_party(difficulty)
+    cr /= multiplier(opts[:n]) if opts[:n]
+    # Find monster with CR no greater than cr
+    monster_attrs = $monsters.sample terrain: terrain, cr: cr, strict: opts[:strict]
+    if opts[:n].nil? # Compute n based on cr & difficulty
+      mon_cr = MonsterLibrary.cr(monster_attrs)
+      mon_multiplier = cr / mon_cr
+      n_monsters_range, _ = Table['encounter-multipliers.tsv'].min do |row_a, row_b|
+        delta_a, delta_b = [row_a, row_b].map {|row| (row[1].to_f - mon_multiplier).abs }
+        delta_a <=> delta_b
+      end
+      a, z = n_monsters_range.split(/-/).map(&:to_i)
+      z ||= a
+      n = (a..z).to_a.sample
+    else
+      n = opts[:n]
+    end
+    (1..n).each {|i| enc.npcs << Monster.new(monster_attrs) }
+    enc
   end
 
   # Difficulty

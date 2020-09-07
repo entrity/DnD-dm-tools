@@ -24,15 +24,22 @@ class MonsterLibrary
     end
   end
 
-  def sample terrain=nil, strict=false
-    if terrain.nil?
-      @open5e_array.sample
-    elsif strict
-      @environments[terrain].sample
+  def sample opts={}
+    if terrain = opts[:terrain]
+      selection = @environments[terrain]
+      selection += @environments['any'] unless opts[:strict]
     else
-      population = @environments[terrain] + @environments['any']
-      population.sample
+      selection = @open5e_array.dup
     end
+    if cr = opts[:cr]
+      cr = eval("#{cr}.0") if cr.is_a?(String)
+      selection = selection.select {|mon| MonsterLibrary.cr(mon) == cr }
+    end
+    selection.sample
+  end
+
+  def self.cr monster_attrs
+    eval("#{monster_attrs['challenge_rating']}.0")
   end
 
   private
