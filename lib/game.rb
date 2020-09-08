@@ -4,18 +4,22 @@ require './lib/roll'
 
 class Game
   attr_reader :party
+  alias :pcs :party
 
   def initialize fpath
     @fpath = fpath # Attr overwritten if file exists s.t. file is not overwritten
     @party = {}
+    @terrain = nil
   end
 
   def dump
     File.write @fpath, Marshal.dump(self)
   end
 
-  def encounter difficulty, terrain
-    Encounter.new @party, difficulty, terrain
+  # Start a random encounter
+  def encounter difficulty, terrain=nil
+    terrain ||= @terrain
+    Encounter.random @party, difficulty, terrain
   end
 
   def increment_fpath
@@ -40,6 +44,6 @@ class Game
   end
 
   def start
-    binding.pry
+    binding.pry # Run `ls` for common commands
   end
 end

@@ -1,4 +1,5 @@
 require './lib/ansi'
+require './lib/table'
 
 class Character
   def initialize attrs={}
@@ -24,8 +25,8 @@ class Character
   def to_s
     out = [h1(name), Ansi.faint('cr'), challenge_rating, Ansi.faint('hp'), color_hp, Ansi.faint('ac'), ac, Ansi.faint('spd'), speed].join(' ') + "\n"
     out += %i[str dex con int wis cha].map {|s| [Ansi.faint(s), send(s)]}.join(" ")
-    _actions = actions.map {|a| [Ansi.underline(a['name']), Ansi.faint(a['desc'])].join(' ') }.join("\n")
-    _special_abilities = special_abilities.map {|a| [Ansi.underline(a['name']), Ansi.faint(a['desc'])].join(' ') }.join("\n")
+    _actions = actions&.map {|a| [Ansi.underline(a['name']), Ansi.faint(a['desc'])].join(' ') }&.join("\n")
+    _special_abilities = special_abilities&.map {|a| [Ansi.underline(a['name']), Ansi.faint(a['desc'])].join(' ') }&.join("\n")
     out += "\n\n#{Ansi.yellow 'Actions'}\n#{_actions}" if _actions
     out += "\n\n#{Ansi.yellow 'Special abilities'}\n#{_special_abilities}" if _special_abilities
   end
@@ -45,7 +46,9 @@ class Character
   private
 
   def color_hp
-    if hp <= 0
+    if hp.nil?
+      ''
+    elsif hp <= 0
       [Ansi.fmt(Ansi::RED, Ansi::BG_BLACK), hp, Ansi.fmt(Ansi::FG_RESET, Ansi::BG_RESET)].join
     elsif hp < 5
       Ansi.red hp

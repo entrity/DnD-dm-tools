@@ -1,10 +1,12 @@
+require './lib/monster_library'
+
 class Encounter
   attr_reader :npcs, :party
   attr_reader :initiative_order
 
   def initialize party
     @party = party
-    @npcs = Set.new
+    @npcs = []
     @initiative_cursor = 0
     @initiative_order = []
   end
@@ -45,12 +47,12 @@ class Encounter
   end
 
   # Compute XP for difficulty for party
-  def self.random party, terrain, difficulty, opts={}
+  def self.random party, difficulty, terrain, opts={}
     enc = new party
     cr = opts[:cr] || enc.cr_for_party(difficulty)
     cr /= multiplier(opts[:n]) if opts[:n]
     # Find monster with CR no greater than cr
-    monster_attrs = $monsters.sample terrain: terrain, cr: cr, strict: opts[:strict]
+    monster_attrs = MonsterLibrary.sample terrain: terrain, cr: cr, strict: opts[:strict]
     if opts[:n].nil? # Compute n based on cr & difficulty
       mon_cr = MonsterLibrary.cr(monster_attrs)
       mon_multiplier = cr / mon_cr

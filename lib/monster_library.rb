@@ -42,6 +42,11 @@ class MonsterLibrary
     eval("#{monster_attrs['challenge_rating']}.0")
   end
 
+  def self.sample *args
+    @library ||= MonsterLibrary.new
+    @library.sample *args
+  end
+
   private
 
   def load_environments

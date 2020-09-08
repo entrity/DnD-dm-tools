@@ -15,9 +15,6 @@ if __FILE__ == $PROGRAM_NAME
   else
     game = Game.new fpath
   end
-  load_monsters
-  puts "monsters..."
-  puts $monsters.length
   game.start
   game.dump
 end
