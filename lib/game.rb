@@ -23,6 +23,7 @@ class Game
   # Save state to file
   def dump
     File.write @fpath, Marshal.dump(self)
+    puts "Saved to #{@fpath}"
   end
 
   # Start a random encounter
