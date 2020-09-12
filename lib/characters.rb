@@ -11,7 +11,7 @@ class Character
   end
 
   def inspect
-    "<#{self.class.name}:#{object_id} name \"#{name}\" cr #{challenge_rating}\>"
+    "<#{self.class.name}:#{object_id} name \"#{name}\" cr #{challenge_rating} hp #{hp}\>"
   end
 
   def mod attribute_score
@@ -73,6 +73,7 @@ class Character
   attr :hit_points, :hp # 65,
   attr :hit_dice # "10d8",
   attr :speed # {"walk # 30},
+  attr :spell_list
   attr :strength, :str # 15,
   attr :dexterity, :dex # 16,
   attr :constitution, :con # 14,
@@ -119,10 +120,8 @@ end
 class Npc < Character
 end
 
-class Foe < Npc
-end
-
-class Monster < Foe
+# See MonsterLibrary class for how/where monster classes are loaded
+class Monster < Npc
 end
 
 class Party < Hash

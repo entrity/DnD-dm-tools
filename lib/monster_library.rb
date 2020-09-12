@@ -17,8 +17,10 @@ class MonsterLibrary
     end
   end
 
+  def list; @open5e_array; end
+
   # Return name + CR
-  def list
+  def print
     @open5e_array.map do |mon|
       "#{mon['name']} (CR #{mon['challenge_rating']})"
     end

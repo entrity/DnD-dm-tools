@@ -53,9 +53,14 @@ class Encounter
     cr /= multiplier(opts[:n]) if opts[:n]
     # Find monster with CR no greater than cr
     monster_attrs = MonsterLibrary.sample terrain: terrain, cr: cr, strict: opts[:strict]
-    if opts[:n].nil? # Compute n based on cr & difficulty
-      mon_cr = MonsterLibrary.cr(monster_attrs)
-      mon_multiplier = cr / mon_cr
+    selected_monster_cr = MonsterLibrary.cr(monster_attrs)
+    if n = opts[:n]
+      # noop
+    elsif 0 == selected_monster_cr
+      n = 1 + rand(10)
+    else # Compute n based on cr & difficulty
+      mon_multiplier = cr / selected_monster_cr
+      # Find the number of monsters to yield a CR closest to the CR from the table
       n_monsters_range, _ = Table['encounter-multipliers.tsv'].min do |row_a, row_b|
         delta_a, delta_b = [row_a, row_b].map {|row| (row[1].to_f - mon_multiplier).abs }
         delta_a <=> delta_b
@@ -63,8 +68,6 @@ class Encounter
       a, z = n_monsters_range.split(/-/).map(&:to_i)
       z ||= a
       n = (a..z).to_a.sample
-    else
-      n = opts[:n]
     end
     (1..n).each {|i| enc.npcs << Monster.new(monster_attrs) }
     enc

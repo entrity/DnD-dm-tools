@@ -1,6 +1,8 @@
 require 'pry'
 require './lib/encounter'
 require './lib/roll'
+require './lib/characters'
+require './lib/monster_library'
 
 class Game
   attr_reader :party
@@ -8,6 +10,7 @@ class Game
 
   def initialize fpath
     @fpath = fpath # Attr overwritten if file exists s.t. file is not overwritten
+    @notes ||= []
     @party = {}
     @terrain = nil
   end
@@ -19,7 +22,7 @@ class Game
   # Start a random encounter
   def encounter difficulty, terrain=nil
     terrain ||= @terrain
-    Encounter.random @party, difficulty, terrain
+    $encounter = Encounter.random @party, difficulty, terrain
   end
 
   def increment_fpath
@@ -31,19 +34,48 @@ class Game
     end
   end
 
-  def note text
-    @notes ||= []
-    @notes << text
+  def monsters *fields, **search
+    selection = $monsters.list
+    sort_key = search.delete(:sort)&.to_s
+    unless search.empty?
+      selection = selection.select {|m| search.all? {|k,v| m[k.to_s] == v } }
+    end
+    unless sort_key.nil?
+      selection = selection.sort {|a,b|
+        va, vb = [a,b].map { |x|
+          # Handle CR, which is stored as a string, e.g. "1/8"
+          x[sort_key].to_s =~ /^\d$|^\d.*\d$/ ? eval(x[sort_key]) : x[sort_key]
+        }
+        va <=> vb
+      }
+    end
+    unless fields.empty?
+      selection = selection.map {|m| m.values_at *fields.map(&:to_s) }
+    end
+    selection
   end
+
+  def note text; @notes << text; end
 
   # Roll
   def r command=nil
-    binding.pry if command.nil?
     command = gets if command.nil?
-    Roll.new(command).to_s
+    puts Roll.new(command).to_s
   end
 
   def start
     binding.pry # Run `ls` for common commands
+  end
+
+  # Display array of arrays as a table
+  def table data
+    n_cols = data&.first&.length.to_i
+    n_rows = data&.length.to_i
+    col_lens = (0...n_cols).map {|i| data.map {|r| r[i].to_s.length }.max }
+    data.each do |row|
+      strings = row.map.with_index { |col, i| "%#{col_lens[i]}s" % col }
+      puts strings.join(" | ")
+    end
+    nil
   end
 end
