@@ -15,6 +15,12 @@ class Game
     @terrain = nil
   end
 
+  # CRs for current party for all difficulties
+  def crs_for_party
+    Encounter.crs_for_party(@party)
+  end
+
+  # Save state to file
   def dump
     File.write @fpath, Marshal.dump(self)
   end

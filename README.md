@@ -44,6 +44,10 @@ mon.hp -= 3
 
 # List pcs
 pcs # aliased to `party`
+# Add a pc
+pcs['jack'] = Pc.new 'jack', 3
+# List CRs for party
+crs_for_party
 
 # Start a random encounter (difficulty based on your party's abilities)
 enc = encounter Encounter::HARD
@@ -56,6 +60,6 @@ enc.init pcs.first, 17 # It can be done with a Character object
 enc.init # Roll initiative for NPCs
 # Add NPCs to encounter
 enc.npcs << Monster.new(monster_attrs)
-# Compute CR for party and difficulty
-enc.cr_for_party Encounter::DEADLY
+# Get player whose turn it is and increment the cursor
+p = enc.next
 ```

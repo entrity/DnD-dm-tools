@@ -11,17 +11,9 @@ class Encounter
     @initiative_order = []
   end
 
-  # Compute CR for party (DMG p.275)
+  # Compute CR for party (DMG p.275). Returns float
   def cr_for_party difficulty
-    party_xp_threshold = @party.values.sum {|pc| pc.xp_threshold(difficulty) }
-    # Find nearest XP match, return CR
-    cr, xp = Table['xp-by-cr.tsv'].min {|row_a, row_b|
-      delta_a, delta_b = [row_a, row_b].map {|row|
-        (row[1].to_i - party_xp_threshold).abs
-      }
-      delta_a <=> delta_b
-    }
-    cr.to_f
+    eval(self.class.crs_for_party(@party)[difficulty-1])
   end
 
   # Roll initiative
@@ -44,6 +36,24 @@ class Encounter
     @initiative_cursor += 1
     @initiative_cursor = 0 if @initiative_cursor >= @initiative_order.length
     character
+  end
+
+  # Returns Array of CR string values for party
+  def self.crs_for_party party
+    pcs = party.values
+    difficulties = [EASY, MEDIUM, HARD, DEADLY]
+    difficulties.map do |difficulty|
+      # Compute party's XP threshold for given difficulty
+      xp_threshold = pcs.sum {|pc| Table['xp-thresholds-by-character-level.tsv'][pc.level-1][difficulty-1].to_i }
+      # Find nearest XP match in table, return CR
+      cr, xp = Table['xp-by-cr.tsv'].min {|row_a, row_b|
+        delta_a, delta_b = [row_a, row_b].map {|row|
+          (row[1].to_i - xp_threshold).abs
+        }
+        delta_a <=> delta_b
+      }
+      cr
+    end
   end
 
   # Compute XP for difficulty for party

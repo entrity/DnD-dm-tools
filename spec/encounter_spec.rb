@@ -44,7 +44,7 @@ describe Encounter do
 
   describe '.random' do
     it 'returns a encounter with at least one npc' do
-      enc = Encounter.random party, Encounter::ARCTIC, Encounter::HARD
+      enc = Encounter.random party, Encounter::HARD, Encounter::ARCTIC
       enc.init 'jack', 4
       enc.init enc.party['jill'], 16
       expect(enc.party['jack']).to eq(game.party['jack'])

@@ -29,6 +29,7 @@ class Character
     _special_abilities = special_abilities&.map {|a| [Ansi.underline(a['name']), Ansi.faint(a['desc'])].join(' ') }&.join("\n")
     out += "\n\n#{Ansi.yellow 'Actions'}\n#{_actions}" if _actions
     out += "\n\n#{Ansi.yellow 'Special abilities'}\n#{_special_abilities}" if _special_abilities
+    out
   end
 
   def self.attr attr_name, *aliases
