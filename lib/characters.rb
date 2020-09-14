@@ -2,7 +2,10 @@ require './lib/ansi'
 require './lib/table'
 
 class Character
+  attr_reader :attrs
+
   def initialize attrs={}
+    attrs = $monsters[attrs] if attrs.is_a? String
     @attrs = attrs
   end
 
@@ -25,8 +28,8 @@ class Character
   def to_s
     out = [h1(name), Ansi.faint('cr'), challenge_rating, Ansi.faint('hp'), color_hp, Ansi.faint('ac'), ac, Ansi.faint('spd'), speed].join(' ') + "\n"
     out += %i[str dex con int wis cha].map {|s| [Ansi.faint(s), send(s)]}.join(" ")
-    _actions = actions&.map {|a| [Ansi.underline(a['name']), Ansi.faint(a['desc'])].join(' ') }&.join("\n")
-    _special_abilities = special_abilities&.map {|a| [Ansi.underline(a['name']), Ansi.faint(a['desc'])].join(' ') }&.join("\n")
+    _actions = name_desc_field_to_s actions
+    _special_abilities = name_desc_field_to_s special_abilities
     out += "\n\n#{Ansi.yellow 'Actions'}\n#{_actions}" if _actions
     out += "\n\n#{Ansi.yellow 'Special abilities'}\n#{_special_abilities}" if _special_abilities
     out
@@ -60,6 +63,14 @@ class Character
 
   def h1 text
     [Ansi.fmt(Ansi::BOLD, Ansi::YELLOW), text, Ansi.fmt(Ansi::BOLD_OFF, Ansi::FG_RESET)].join
+  end
+
+  def name_desc_field_to_s value
+    if value.is_a? Array
+      value.map {|a| [Ansi.underline(a['name']), Ansi.faint(a['desc'])].join(' ') }&.join("\n")
+    else
+      value&.length.to_i > 0 && value
+    end
   end
 
   attr :slug # "bandit-captain",

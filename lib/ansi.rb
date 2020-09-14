@@ -42,6 +42,10 @@ module Ansi
     [fmt(BOLD), text, fmt(BOLD_OFF)].join
   end
 
+  def self.cyan text
+    [fmt(CYAN), text, fmt(FG_RESET)].join
+  end
+
   def self.yellow text
     [fmt(YELLOW), text, fmt(FG_RESET)].join
   end

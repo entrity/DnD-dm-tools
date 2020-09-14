@@ -11,6 +11,18 @@ class Encounter
     @initiative_order = []
   end
 
+  def cr
+    return 0 if @npcs.empty?
+    row = Table['encounter-multipliers.tsv'].find do |row|
+      multiplier, range = row
+      range_a, range_z = range.split('-')
+      range_z ||= range_a
+      @npcs.length >= range_a.to_i && @npcs.length <= range_z.to_i
+    end
+    multiplier = row[0].to_f
+    multiplier * @npcs.sum {|npc| npc.cr }
+  end
+
   # Compute CR for party (DMG p.275). Returns float
   def cr_for_party difficulty
     eval(self.class.crs_for_party(@party)[difficulty-1])
@@ -36,6 +48,14 @@ class Encounter
     @initiative_cursor += 1
     @initiative_cursor = 0 if @initiative_cursor >= @initiative_order.length
     character
+  end
+
+  def hoard
+    Treasure.hoard cr
+  end
+
+  def treasure
+    Treasure.individual cr
   end
 
   # Returns Array of CR string values for party

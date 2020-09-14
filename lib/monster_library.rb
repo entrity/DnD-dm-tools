@@ -10,7 +10,7 @@ class MonsterLibrary
   end
 
   def [] name_or_idx
-    if name_or_idx.is_a? Fixnum
+    if name_or_idx.is_a? Integer
       @open5e_array[name_or_idx]
     else
       @open5e_hash[name_or_idx]

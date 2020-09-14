@@ -1,9 +1,14 @@
+require './lib/ansi'
 require './lib/roll'
 
 module Treasure
 
   def self.roll text
-    Roll.new(text).to_s
+    Roll.new(text).value
+  end
+
+  def self.puts str
+    super Ansi.yellow str
   end
 
   def self.individual cr
@@ -167,11 +172,12 @@ module Treasure
 
   def self.magic_items table_name, qty_cmd='1'
     qty = Roll.new(qty_cmd).value
-    puts "Magic items:"
-    (1..qty).each do |i|
+    title = [Ansi.fmt(Ansi::CYAN), "\nMagic items:", Ansi.fmt(Ansi::YELLOW)].join
+    items = (1..qty).map do |i|
       table_index = Roll.new('1d100').value
-      puts MAGIC_ITEMS_TABLES[table_name][table_index]
-    end
+      MAGIC_ITEMS_TABLES[table_name][table_index]&.strip
+    end.select {|x| x && x.length > 0 }
+    items.unshift(title).join("\n")
   end
 
   # Called only during startup

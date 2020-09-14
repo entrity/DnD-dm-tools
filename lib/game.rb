@@ -3,6 +3,7 @@ require './lib/encounter'
 require './lib/roll'
 require './lib/characters'
 require './lib/monster_library'
+require './lib/treasure'
 
 class Game
   attr_reader :party
