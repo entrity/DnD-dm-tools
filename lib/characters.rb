@@ -6,7 +6,7 @@ class Character
 
   def initialize attrs={}
     attrs = $monsters[attrs] if attrs.is_a? String
-    @attrs = attrs
+    @attrs = attrs.dup
   end
 
   def cr
