@@ -66,10 +66,10 @@ class Game
   def note text; @notes << text; end
 
   # Roll
-  def r command=nil
-    command = gets if command.nil?
+  def roll command
     puts Roll.new(command).to_s
   end
+  alias_method :r, :roll
 
   def start
     binding.pry # Run `ls` for common commands

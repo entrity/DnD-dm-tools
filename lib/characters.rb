@@ -4,6 +4,10 @@ require './lib/table'
 class Character
   attr_reader :attrs
 
+  def self.[] name_or_slug
+    Character.new $monsters[name_or_slug]
+  end
+
   def initialize attrs={}
     attrs = $monsters[attrs] if attrs.is_a? String
     @attrs = attrs.dup
