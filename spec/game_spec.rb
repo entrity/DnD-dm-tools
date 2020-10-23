@@ -31,10 +31,4 @@ describe Game do
       expect(subject.monsters.all? {|m| m.is_a?(Hash) }).to be true
     end
   end
-
-  describe '#r' do
-    it 'raises no error' do
-      expect { subject.r 'd20 + 4 + 3d6' }.to_not raise_error
-    end
-  end
 end

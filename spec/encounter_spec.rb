@@ -35,9 +35,9 @@ describe Encounter do
       expect(enc.initiative_order).to include gob2
       expect(enc.initiative_order).to include enc.party['jill']
       expect(enc.initiative_order).to include enc.party['jack']
-      round_1 = (1..4).map { enc.next }
+      round_1 = (1..4).map { enc.pop }
       expect(round_1).to match_array(enc.initiative_order)
-      round_2 = (1..4).map { enc.next }
+      round_2 = (1..4).map { enc.pop }
       expect(round_2).to match_array(round_1)
     end
   end

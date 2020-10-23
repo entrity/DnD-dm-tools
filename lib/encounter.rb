@@ -43,7 +43,7 @@ class Encounter
   end
 
   # Return the next guy in the initiative
-  def next
+  def pop
     character = @initiative_order[@initiative_cursor]
     @initiative_cursor += 1
     @initiative_cursor = 0 if @initiative_cursor >= @initiative_order.length

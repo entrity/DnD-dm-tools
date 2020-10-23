@@ -42,3 +42,12 @@ class Roll
     "(#{rolls})"
   end
 end
+
+def roll command=nil
+  if command.nil?
+    $stdout.write "Roll: "
+    command = $stdin.gets
+  end
+  puts Roll.new(command).to_s
+end
+alias :r :roll

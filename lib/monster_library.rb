@@ -19,6 +19,14 @@ class MonsterLibrary
 
   def list; @open5e_array; end
 
+  def method_missing name, *args, **kwargs
+    if terrain = @environments.keys.find { |k| k.downcase == name.downcase }
+      @environments[terrain]
+    else
+      super
+    end
+  end
+
   # Return name + CR
   def print
     @open5e_array.map do |mon|
