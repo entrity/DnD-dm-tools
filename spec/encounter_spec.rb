@@ -7,9 +7,23 @@ describe Encounter do
   end }
   let(:party) { game.party }
   let(:monsters) { MonsterLibrary.new }
+  let(:enc) { Encounter.new party }
+
+  describe '#cr' do
+    it 'returns expected cr' do
+      expect(enc.cr).to eq(0)
+      enc.add 'thug'
+      expect(enc.cr).to eq(0.5)
+      enc.add 'thug'
+      expect(enc.cr).to eq(1)
+      enc.add 'thug'
+      expect(enc.cr).to eq(3)
+      enc.add 'bandit'
+      expect(enc.cr).to eq(3)
+    end
+  end
 
   describe '#cr_for_party' do
-    let(:enc) { Encounter.new party }
     it 'returns expected cr' do
       expect(enc.cr_for_party Encounter::EASY).to eq 1
       expect(enc.cr_for_party Encounter::MEDIUM).to eq 2
@@ -42,6 +56,29 @@ describe Encounter do
     end
   end
 
+  describe '#xp' do
+    it 'returns expect xp' do
+      expect(enc.xp).to eq(0)
+      enc.add 'thug'
+      expect(enc.xp).to eq(100)
+      enc.add 'thug'
+      expect(enc.xp).to eq(300) # 200*1.5
+      enc.add 'bandit'
+      expect(enc.xp).to eq(450) # 225*2
+    end
+  end
+
+  describe '.cr_for_xp' do
+    it 'returns the table values' do
+      expect(Encounter.cr_for_xp(25)).to eq(0.125)
+      expect(Encounter.cr_for_xp(35)).to eq(0.125)
+      expect(Encounter.cr_for_xp(40)).to eq(0.25)
+      expect(Encounter.cr_for_xp(8500)).to eq(12)
+      expect(Encounter.cr_for_xp(22000)).to eq(19)
+      expect(Encounter.cr_for_xp(135000)).to eq(29)
+    end
+  end
+
   describe '.random' do
     it 'returns a encounter with at least one npc' do
       enc = Encounter.random party, Encounter::HARD, Encounter::ARCTIC
@@ -53,6 +90,21 @@ describe Encounter do
       npc_count = enc.initiative_order.count {|char| char.is_a?(Npc) }
       expect(pc_count).to eq 2
       expect(npc_count).to be > 0
+    end
+  end
+
+  describe '.xp_multiplier' do
+    it 'returns the table values' do
+      expect(Encounter.xp_multiplier(0)).to eq(0)
+      expect(Encounter.xp_multiplier(1)).to eq(1)
+      expect(Encounter.xp_multiplier(2)).to eq(1.5)
+      expect(Encounter.xp_multiplier(3)).to eq(2)
+      expect(Encounter.xp_multiplier(4)).to eq(2)
+      expect(Encounter.xp_multiplier(5)).to eq(2)
+      expect(Encounter.xp_multiplier(6)).to eq(2)
+      expect(Encounter.xp_multiplier(7)).to eq(2.5)
+      expect(Encounter.xp_multiplier(13)).to eq(3)
+      expect(Encounter.xp_multiplier(28)).to eq(4)
     end
   end
 end

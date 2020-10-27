@@ -14,7 +14,7 @@ class Character
   end
 
   def cr
-    challenge_rating.to_f
+    eval "#{challenge_rating}.0"
   end
 
   def inspect

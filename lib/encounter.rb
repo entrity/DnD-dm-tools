@@ -1,6 +1,8 @@
 require './lib/monster_library'
+require 'forwardable'
 
 class Encounter
+  extend Forwardable
   attr_reader :npcs, :party
   attr_reader :initiative_order
 
@@ -11,21 +13,23 @@ class Encounter
     @initiative_order = []
   end
 
-  def cr
-    return 0 if @npcs.empty?
-    row = Table['encounter-multipliers.tsv'].find do |row|
-      multiplier, range = row
-      range_a, range_z = range.split('-')
-      range_z ||= range_a
-      @npcs.length >= range_a.to_i && @npcs.length <= range_z.to_i
+  # Add NPC based on slug
+  def add slug
+    if foe = Monster[slug]
+      @npcs << foe
+    else
+      raise "No foe found for slug #{slug}"
     end
-    multiplier = row[0].to_f
-    multiplier * @npcs.sum {|npc| npc.cr }
   end
 
-  # Compute CR for party (DMG p.275). Returns float
+  # Compute CR based on the XP for this encounter
+  def cr
+    cr_for_xp(xp)
+  end
+
+  # Compute CR for party+difficulty (DMG p.275). Returns float
   def cr_for_party difficulty
-    eval(self.class.crs_for_party(@party)[difficulty-1])
+    self.class.crs_for_party(@party)[difficulty-1]
   end
 
   # Roll initiative
@@ -42,7 +46,7 @@ class Encounter
     @initiative_order = @initiative.to_a.sort {|x| x[1]}.map {|x| x[0]}
   end
 
-  # Return the next guy in the initiative
+  # Return the next character in the initiative order, update the cursor.
   def pop
     character = @initiative_order[@initiative_cursor]
     @initiative_cursor += 1
@@ -58,25 +62,34 @@ class Encounter
     Treasure.individual cr
   end
 
-  # Returns Array of CR string values for party
+  # XP earned from encounter
+  def xp
+    xp_sum = @npcs.sum {|c| xp_for_cr[c.cr] }
+    xp_sum * xp_multiplier(@npcs&.length.to_i)
+  end
+
+  # Returns Array of CR string values for party for all difficulties
   def self.crs_for_party party
     pcs = party.values
     difficulties = [EASY, MEDIUM, HARD, DEADLY]
     difficulties.map do |difficulty|
       # Compute party's XP threshold for given difficulty
       xp_threshold = pcs.sum {|pc| Table['xp-thresholds-by-character-level.tsv'][pc.level-1][difficulty-1].to_i }
-      # Find nearest XP match in table, return CR
-      cr, xp = Table['xp-by-cr.tsv'].min {|row_a, row_b|
-        delta_a, delta_b = [row_a, row_b].map {|row|
-          (row[1].to_i - xp_threshold).abs
-        }
-        delta_a <=> delta_b
-      }
-      cr
+      cr_for_xp(xp_threshold)
     end
   end
 
-  # Compute XP for difficulty for party
+  # Find nearest XP match in table, return corresponding CR
+  def self.cr_for_xp xp_target
+    cr, xp = xp_for_cr.min { |row_a, row_b|
+      deltas = [row_a, row_b].map {|_, row_xp| (row_xp.to_i - xp_target).abs }
+      deltas[0] <=> deltas[1]
+    }
+    cr
+  end
+  def_delegator self, :cr_for_xp
+
+  # Create a random encounter
   def self.random party, difficulty, terrain, opts={}
     enc = new party
     cr = opts[:cr] || enc.cr_for_party(difficulty)
@@ -102,6 +115,24 @@ class Encounter
     (1..n).each {|i| enc.npcs << Monster.new(monster_attrs) }
     enc
   end
+
+  # Return Hash of {XP => CR}
+  def self.xp_for_cr
+    @@xp_by_cr ||= Table['xp-by-cr.tsv'].map {|k,v| [eval("#{k}.0"), v.to_i] }.to_h
+  end
+  def_delegator self, :xp_for_cr
+
+  # Look up XP multiplier for encounter with multiple foes
+  def self.xp_multiplier n_foes
+    range_str, mult_str = Table['encounter-multipliers.tsv'].find do |row|
+      range, multiplier = row
+      range_a, range_z = range.split('-')
+      range_z ||= range_a
+      n_foes >= range_a.to_i && n_foes <= range_z.to_i
+    end
+    mult_str.to_f
+  end
+  def_delegator self, :xp_multiplier
 
   # Difficulty
   EASY = 1
