@@ -17,6 +17,10 @@ class MonsterLibrary
     end
   end
 
+  def for_environment name
+    @environments[name.to_s.capitalize].map {|m| m.values_at('name', 'challenge_rating').join(' / ')}.sort
+  end
+
   def list; @open5e_array; end
 
   def method_missing name, *args, **kwargs

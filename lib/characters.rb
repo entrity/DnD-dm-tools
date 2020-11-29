@@ -18,7 +18,13 @@ class Character
   end
 
   def inspect
-    "<#{self.class.name}:#{object_id} name \"#{name}\" cr #{challenge_rating} hp #{hp}\>"
+    out = [h1(name), Ansi.faint('cr'), challenge_rating, Ansi.faint('hp'), color_hp, Ansi.faint('ac'), ac, Ansi.faint('spd'), speed].join(' ') + "\n"
+    out += %i[str dex con int wis cha].map {|s| [Ansi.faint(s), send(s)]}.join(" ")
+    _actions = name_desc_field_to_s actions
+    _special_abilities = name_desc_field_to_s special_abilities
+    out += "\n\n#{Ansi.yellow 'Actions'}\n#{_actions}" if _actions
+    out += "\n\n#{Ansi.yellow 'Special abilities'}\n#{_special_abilities}" if _special_abilities
+    out
   end
 
   def mod attribute_score
@@ -30,13 +36,7 @@ class Character
   end
 
   def to_s
-    out = [h1(name), Ansi.faint('cr'), challenge_rating, Ansi.faint('hp'), color_hp, Ansi.faint('ac'), ac, Ansi.faint('spd'), speed].join(' ') + "\n"
-    out += %i[str dex con int wis cha].map {|s| [Ansi.faint(s), send(s)]}.join(" ")
-    _actions = name_desc_field_to_s actions
-    _special_abilities = name_desc_field_to_s special_abilities
-    out += "\n\n#{Ansi.yellow 'Actions'}\n#{_actions}" if _actions
-    out += "\n\n#{Ansi.yellow 'Special abilities'}\n#{_special_abilities}" if _special_abilities
-    out
+    "<#{self.class.name}:#{object_id} name \"#{name}\" cr #{challenge_rating} hp #{hp}\>"
   end
 
   def self.attr attr_name, *aliases

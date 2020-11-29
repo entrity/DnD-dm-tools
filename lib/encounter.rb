@@ -6,9 +6,9 @@ class Encounter
   attr_reader :npcs, :party
   attr_reader :initiative_order
 
-  def initialize party
+  def initialize party, npcs=[]
     @party = party
-    @npcs = []
+    @npcs = Array(npcs)
     @initiative_cursor = 0
     @initiative_order = []
   end
@@ -43,7 +43,7 @@ class Encounter
     end
     # Roll for npcs
     @npcs.each {|npc| @initiative[npc] = npc.roll_initiative }
-    @initiative_order = @initiative.to_a.sort {|x| x[1]}.map {|x| x[0]}
+    @initiative_order = @initiative.to_a.sort {|a,b| b[1]<=>a[1]}.map {|x| x[0]}
   end
 
   # Return the next character in the initiative order, update the cursor.
