@@ -1,0 +1,55 @@
+<interface>
+  <object id="window" class="GtkWindow">
+    <property name="visible">True</property>
+    <property name="title">Grid</property>
+    <property name="border-width">10</property>
+    <property name="default-width">600</property>
+    <property name="default-height">500</property>
+    <child>
+    	<object id="wrapper" class="GtkPaned">
+				<property name="visible">true</property>
+    		<child>
+    			<object id="notebook" class="GtkNotebook">
+    				<property name="visible">true</property>
+    				<child>
+    					<object id="pcs-pane" class="GtkLabel">
+		    				<property name="visible">true</property>
+    						<property name="label">PC content</property>
+    					</object>
+    				</child>
+    				<child type="tab">
+    					<object class="GtkLabel">
+		    				<property name="visible">true</property>
+    						<property name="label">PCs</property>
+    					</object>
+    				</child>
+    				<child>
+    					<object id="encounter-pane" class="GtkLabel">
+		    				<property name="visible">true</property>
+    						<property name="label">Encounter content</property>
+    					</object>
+    				</child>
+    				<child type="tab">
+    					<object class="GtkLabel">
+		    				<property name="visible">true</property>
+    						<property name="label">Encounter</property>
+    					</object>
+    				</child>
+    			</object>
+    			<packing>
+    				<property name="resize">true</property>
+    			</packing>
+    		</child>
+    		<child>
+    			<object class="GtkLabel">
+    				<property name="visible">true</property>
+    				<property name="label">roll</property>
+    			</object>
+    			<packing>
+    				<property name="resize">false</property>
+    			</packing>
+    		</child>
+    	</object>
+    </child>
+  </object>
+</interface>
