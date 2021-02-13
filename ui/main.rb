@@ -41,8 +41,8 @@ window.signal_connect("key-press-event") do |widget, event|
 end
 ##########################
 
-# @encounter = Encounter.new
-# MonstersUI.new(builder, @encounter)
+@encounter = Encounter.new
+MonstersUI.new(builder, @encounter)
 ##########################
 # button = builder.get_object("button2")
 # button.signal_connect("clicked") { puts "Hello World" }
