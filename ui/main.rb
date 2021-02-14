@@ -2,6 +2,12 @@ require "gtk3"
 require_relative 'monsters_ui'
 require_relative 'encounter'
 
+style_provider = Gtk::CssProvider.new
+style_provider.load_from_file Gio::File.new_for_path 'style.css'
+Gtk::StyleContext.add_provider_for_screen(
+    Gdk::Screen.default,
+    style_provider,
+)
 builder_file = "#{File.expand_path(File.dirname(__FILE__))}/backup.ui"
 
 # Construct a Gtk::Builder instance and load our UI description
@@ -43,6 +49,7 @@ end
 
 @encounter = Encounter.new
 MonstersUI.new(builder, @encounter)
+builder.get_object('monsters-search').grab_focus # todo rm
 ##########################
 # button = builder.get_object("button2")
 # button.signal_connect("clicked") { puts "Hello World" }
