@@ -1,10 +1,16 @@
-module CharacterUI
-  def character_stats_markup character
-    hp = character['hit_points']
+class CharacterUI
+  def initialize character
+    @character = character
+  end
+
+  def stats_markup
+    hp = @character['hit_points']
     hp = bold colored(hp_color(hp), hp)
     <<~EOF
-    hp #{hp}
-    str #{} dex con int wis cha
+    hp #{hp} \
+    str #{attr :strength} \
+    dex #{attr :dexterity} \
+    con int wis cha
     saves: str dex con int wis cha
     perception:
     speed: walk() fly() swim()
@@ -13,9 +19,13 @@ module CharacterUI
     EOF
   end
 
-  def attr text
+  private
+
+  def attr *keys
+    text = @character.dig *keys.map(&:to_s)
+    return if text.nil? || text.respond_to?(:empty?) && text.empty?
     modifier = ((text.to_i - 10) / 2).floor
-    "text (#{bold modifier})"
+    "#{text} (#{bold modifier})"
   end
 
   def bold text

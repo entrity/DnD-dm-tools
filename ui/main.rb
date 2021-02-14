@@ -8,7 +8,7 @@ Gtk::StyleContext.add_provider_for_screen(
     Gdk::Screen.default,
     style_provider,
 )
-builder_file = "#{File.expand_path(File.dirname(__FILE__))}/backup.ui"
+builder_file = "#{File.expand_path(File.dirname(__FILE__))}/main.ui"
 
 # Construct a Gtk::Builder instance and load our UI description
 builder = Gtk::Builder.new(:file => builder_file)
