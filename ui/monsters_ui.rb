@@ -3,15 +3,14 @@ require_relative '../lib/characters'
 require_relative './monster_view'
 
 class MonstersUI
-  def initialize(builder, encounter)
+  def initialize(builder)
     @builder = builder
-    @encounter = encounter
     @container = builder.get_object 'monsters-list'
     @search = builder.get_object 'monsters-search'
     @notebook_page = builder.get_object 'character-page'
     @lib = MonsterLibrary.new
     @lib.list.sort {|a,b| a['name'] <=> b['name'] }.each do |m|
-      @container.add MonsterListRow.new m, @encounter, @builder
+      @container.add MonsterListRow.new m, @builder
     end
     # Signals
     @container.set_filter_func do |item, a, b|
@@ -27,12 +26,11 @@ end
 class MonsterListRow < Gtk::ListBoxRow
   attr_reader :monster
 
-  def initialize monster, encounter, builder
+  def initialize monster, builder
     super()
     @builder = builder
     @notebook = @builder.get_object 'notebook'
     @notebook_page = builder.get_object 'character-page'
-    @encounter = encounter
     @monster = monster
     # Label
     lbl = Gtk::Button.new label: monster['name']
@@ -47,12 +45,16 @@ class MonsterListRow < Gtk::ListBoxRow
     self.signal_connect("key-press-event") do |widget, event|
       case event.keyval
       when Gdk::Keyval::KEY_e
-        @encounter.add Monster.new(monster)
+        Game.encounter.add Monster.new(monster)
       when Gdk::Keyval::KEY_w
         self.show_window
       when Gdk::Keyval::KEY_Return
         self.show_in_notebook
       end
+    end
+    lbl.signal_connect("clicked") do |widget, event|
+      self.grab_focus
+      show_in_notebook
     end
     add lbl
   end
