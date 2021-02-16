@@ -1,6 +1,7 @@
 require "gtk3"
-require_relative 'monsters_ui'
-require_relative 'encounter'
+require_relative './monsters_ui'
+require_relative './character_view_loader'
+require_relative '../lib/characters'
 require_relative '../lib/game'
 
 ##########################
@@ -12,6 +13,21 @@ Gtk::StyleContext.add_provider_for_screen(
     style_provider,
 )
 
+def add_character_dialog
+  builder_file = "#{File.expand_path(File.dirname(__FILE__))}/character_dialog.ui"
+  builder = Gtk::Builder.new(:file => builder_file)
+  # require 'pry'; binding.pry
+  dialog = builder.objects.find {|o| o.is_a? Gtk::Dialog }
+#   # dialog.show_all
+  dialog.run do |response|
+    puts response
+    dialog.destroy
+  end
+#   # dialog.signal_connect('response') { dialog.destroy }
+#   puts dialog.run
+end
+
+# File > Open
 def load_dialog
   dialog = Gtk::FileChooserDialog.new title: 'Load', parent: nil, action: :open,
   buttons: [[Gtk::Stock::OPEN, Gtk::ResponseType::ACCEPT], [Gtk::Stock::CANCEL, Gtk::ResponseType::CANCEL]]
@@ -21,6 +37,7 @@ def load_dialog
   Game.load fpath
 end
 
+# File > Save
 def save_dialog(widget, save_as=nil)
   if save_as.nil? || Game.instance.fpath.nil?
     puts 'fpath is nil'
@@ -37,13 +54,14 @@ end
 def toggle_pcs
 end
 
-def toggle_visible
+def toggle_visible source, revealer
+  revealer.set_reveal_child !revealer.reveal_child?
 end
 
 ##########################
 # Construct a Gtk::Builder instance and load our UI description
 builder_file = "#{File.expand_path(File.dirname(__FILE__))}/main.ui"
-builder = Gtk::Builder.new(:file => builder_file)
+@builder = builder = Gtk::Builder.new(:file => builder_file)
 builder.connect_signals {|handler| method(handler) }
 window = builder.get_object("window")
 monsters_search_entry = builder.get_object('monsters-search')
@@ -58,8 +76,6 @@ window.signal_connect("key-press-event") do |widget, event|
     monsters_search_entry.grab_focus if event.state.control_mask?
   when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
     Gtk.main_quit if event.state.control_mask?
-  when Gdk::Keyval::KEY_Escape # Unfocus
-    notebook.grab_focus
   when Gdk::Keyval::KEY_1 # Page 1
     notebook.set_page(0)
   when Gdk::Keyval::KEY_2 # Page 2
@@ -69,7 +85,8 @@ end
 
 ##########################
 # Initialize Monsters UI
-MonstersUI.new(builder)
+monster_library = MonsterLibrary.new
+MonstersUI.new(builder, monster_library)
 builder.get_object('monsters-search').grab_focus # todo rm
 
 ##########################
@@ -78,4 +95,5 @@ builder.get_object('monsters-search').grab_focus # todo rm
 
 ##########################
 # Start main loop
+CharacterViewLoader.new @builder, Monster.new(monster_library.list.first)
 Gtk.main

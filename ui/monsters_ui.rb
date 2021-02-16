@@ -1,14 +1,13 @@
 require_relative '../lib/monster_library'
 require_relative '../lib/characters'
-require_relative './monster_view'
+require_relative './character_view_loader'
 
 class MonstersUI
-  def initialize(builder)
+  def initialize(builder, monster_library)
     @builder = builder
     @container = builder.get_object 'monsters-list'
     @search = builder.get_object 'monsters-search'
-    @notebook_page = builder.get_object 'character-page'
-    @lib = MonsterLibrary.new
+    @lib = monster_library
     @lib.list.sort {|a,b| a['name'] <=> b['name'] }.each do |m|
       @container.add MonsterListRow.new m, @builder
     end
@@ -29,8 +28,6 @@ class MonsterListRow < Gtk::ListBoxRow
   def initialize monster, builder
     super()
     @builder = builder
-    @notebook = @builder.get_object 'notebook'
-    @notebook_page = builder.get_object 'character-page'
     @monster = monster
     # Label
     lbl = Gtk::Button.new label: monster['name']
@@ -47,39 +44,23 @@ class MonsterListRow < Gtk::ListBoxRow
       when Gdk::Keyval::KEY_e
         Game.encounter.add Monster.new(monster)
       when Gdk::Keyval::KEY_w
-        self.show_window
+        self.show_in_window
       when Gdk::Keyval::KEY_Return
-        self.show_in_notebook
+        self.show
       end
     end
     lbl.signal_connect("clicked") do |widget, event|
       self.grab_focus
-      show_in_notebook
+      show
     end
     add lbl
   end
 
-  def show_in_notebook
-    page_i = @notebook.page_num @notebook_page
-    @notebook.set_current_page page_i
-    @notebook_page.remove_child @notebook_page.children.first
-    @notebook_page.add MonsterView.new @monster
+  def show
+    CharacterViewLoader.new @builder, Monster.new(@monster)
   end
 
-  def show_window
+  def show_in_window
     puts "show_window"
-    puts @monster.inspect
-    window = Gtk::Window.new
-    window.set_visible true
-    lbl = Gtk::Label.new
-    lbl.set_markup "<b>#{@monster['name']}</b>\nbar"
-    lbl.set_visible true
-    window.add lbl
-    window.signal_connect("key-press-event") do |widget, event|
-      case event.keyval
-      when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w
-        window.close
-      end
-    end
   end
 end
