@@ -17,12 +17,6 @@ class StatsUI < Gtk::Box
     set_visible true
   end
 
-  #   perception:
-  #   speed: walk() fly() swim()
-  #   senses: 
-  #   languages: 
-
-
   private
 
 

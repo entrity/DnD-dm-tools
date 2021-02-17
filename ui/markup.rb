@@ -12,22 +12,33 @@ module Markup
   #   "#{text} (#{bold modifier})"
   # end
 
+  private
+
   def bold text
-    "<b>#{text}</b>"
+    %Q{<b>#{text}</b>}
   end
 
-  def colored color, text
-    "<span foreground=\"#{color}\">#{text}</span>"
+  def character_color
+    is_player? ? '#aaeeaa' : '#ddaadd'
   end
 
-  def hp_markup hp
-    color = if hp <= 0
-      'red'
-    elsif hp <= 5
-      'yellow'
+  def color val, text
+    %Q{<span foreground="#{val}">#{text}</span>}
+  end
+
+  def colored_hp
+    hp = @character.hp.to_i
+    if hp <= 0
+      red hp
+    elsif hp <= 7
+      yellow hp
     else
-      'green'
+      green hp
     end
-    "#{colored 'gray', 'hp'} #{bold colored(color, hp)}"
   end
+
+  def gray text; color 'gray', text; end
+  def green text; color 'green', text; end
+  def red text; color 'red', text; end
+  def yellow text; color 'yellow', text; end
 end

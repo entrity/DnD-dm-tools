@@ -16,15 +16,24 @@ Gtk::StyleContext.add_provider_for_screen(
 def add_character_dialog
   builder_file = "#{File.expand_path(File.dirname(__FILE__))}/character_dialog.ui"
   builder = Gtk::Builder.new(:file => builder_file)
-  # require 'pry'; binding.pry
   dialog = builder.objects.find {|o| o.is_a? Gtk::Dialog }
-#   # dialog.show_all
   dialog.run do |response|
     puts response
     dialog.destroy
   end
-#   # dialog.signal_connect('response') { dialog.destroy }
-#   puts dialog.run
+end
+
+def run_console_input widget
+  text = @console_input.text
+  @console_input.set_text ''
+  begin
+    @console_output.buffer.insert_at_cursor "#{eval(text).inspect}\n"
+  rescue => ex
+    @console_output.buffer.insert_at_cursor "#{ex.inspect}\n"
+  end
+  @console_scroller ||= @builder.get_object('console ScrolledWindow')
+  vadj = @console_scroller.vadjustment
+  vadj.set_value vadj.upper
 end
 
 # File > Open
@@ -54,8 +63,14 @@ end
 def toggle_pcs
 end
 
-def toggle_visible source, revealer
-  revealer.set_reveal_child !revealer.reveal_child?
+def toggle_console_visibility
+  console = @builder.get_object 'console'
+  method(:toggle_visible).unbind.bind(console).call
+  @builder.get_object('console input').grab_focus if console.reveal_child?
+end
+
+def toggle_visible *args
+  set_reveal_child !reveal_child?
 end
 
 ##########################
@@ -65,21 +80,27 @@ builder_file = "#{File.expand_path(File.dirname(__FILE__))}/main.ui"
 builder.connect_signals {|handler| method(handler) }
 window = builder.get_object("window")
 monsters_search_entry = builder.get_object('monsters-search')
+@console_input = @builder.get_object('console input')
+@console_output = @builder.get_object('console output')
 
 # Connect signal handlers to the constructed widgets
 window.signal_connect("destroy") { Gtk.main_quit }
 ##########################
 # cf. https://riptutorial.com/gtk3/example/16426/simple-binding-to-a-widget-s-key-press-event
 window.signal_connect("key-press-event") do |widget, event|
-  case event.keyval
-  when Gdk::Keyval::KEY_m # Search monsters
-    monsters_search_entry.grab_focus if event.state.control_mask?
-  when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
-    Gtk.main_quit if event.state.control_mask?
-  when Gdk::Keyval::KEY_1 # Page 1
-    notebook.set_page(0)
-  when Gdk::Keyval::KEY_2 # Page 2
-    notebook.set_page(1)
+  if event.state.control_mask?
+    case event.keyval
+    when Gdk::Keyval::KEY_m # Search monsters
+      monsters_search_entry.grab_focus
+    when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
+      Gtk.main_quit
+    when Gdk::Keyval::KEY_space # Toggle console
+      toggle_console_visibility
+    when Gdk::Keyval::KEY_1 # Page 1
+      notebook.set_page(0)
+    when Gdk::Keyval::KEY_2 # Page 2
+      notebook.set_page(1)
+    end
   end
 end
 
