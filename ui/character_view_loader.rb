@@ -11,6 +11,7 @@ class CharacterViewLoader
     set 'char-view name', color(character_color, character.name)
     ################
     set 'char-view hp', hp
+    set 'char-view level', level
     set 'char-view armour', armour
     set 'char-view speed', speed
     ################
@@ -28,6 +29,22 @@ class CharacterViewLoader
     set 'char-view save-int', keyval('int', character.intelligence_save)
     set 'char-view save-wis', keyval('wis', character.wisdom_save)
     set 'char-view save-cha', keyval('cha', character.charisma_save)
+    set 'char-view senses', keyval('senses', character.senses, autohide: true), autohide: true
+    set 'char-view languages', keyval('languages', character.languages, autohide: true), autohide: true
+    set 'char-view vulnerabilities', keyval('vulnerabilities', character.damage_vulnerabilities, autohide: true), autohide: true
+    set 'char-view resistances', keyval('resistances', character.damage_resistances, autohide: true), autohide: true
+    set 'char-view immunities', keyval('immunities', character.damage_immunities, autohide: true), autohide: true
+    ################
+    set 'char-view skills', hash_info(character.skills)
+    # langs, immunities, senses
+    set 'char-view spells', array_info(character.spell_list)
+    set 'char-view special-abilities', array_info(character.special_abilities)
+    set 'char-view actions', array_info(character.actions)
+    set 'char-view reactions', character.reactions
+    set 'char-view legendary', legendary
+    ################
+    ################
+    ################
   end
 
   private
@@ -38,10 +55,34 @@ class CharacterViewLoader
     desc&.empty? ? ac : ac + " (#{desc})"
   end
 
+  def array_info data, default='(none)'
+    data.map {|act|
+      [bold(act['name']), act['desc']].join(" ")
+    }.join("\n").presence || default
+  end
+
+  def hash_info data, default='(none)'
+    data.map { |k,v|
+      [bold(k), v].join(" ")
+    }.join("\n").presence || default
+  end
+
   def hp
     hp = keyval('hp', bold(colored_hp))
     dice = @character.hit_dice
     dice&.empty? ? hp : hp + " (#{dice})"
+  end
+
+  def legendary default='(none)'
+    [@character.legendary_desc, array_info(@character.legendary_actions)].compact.join("\n").presence || default
+  end
+
+  def level
+    if @character.is_a?(Monster)
+      keyval "CR", @character.challenge_rating
+    else
+      keyval "LVL", @character.level
+    end
   end
 
   def speed
@@ -66,14 +107,16 @@ class CharacterViewLoader
   end
 
   # Gray key and as-is value
-  def keyval key, val
+  def keyval key, val, opts={}
+    return if opts[:autohide] && !val.presence
     [gray(key), val].join(" ")
   end
   def is_player?
     !@character.is_a? Monster
   end
-  def set id, markup
+  def set id, markup, opts={}
     obj = @builder.get_object(id)
+    obj.set_visible(!!markup.presence) if opts[:autohide]
     obj.set_markup(markup || '(ERRR)')
   end
 end
