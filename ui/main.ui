@@ -1210,7 +1210,7 @@
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkScrolledWindow">
+                          <object class="GtkScrolledWindow" id="command ScrolledWindow">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="shadow_type">in</property>
@@ -1219,7 +1219,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <object class="GtkTextView">
+                                  <object class="GtkTextView" id="command output">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                   </object>
@@ -1234,10 +1234,11 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="command input">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="placeholder_text" translatable="yes">command...</property>
+                            <signal name="activate" handler="run_command_input" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>

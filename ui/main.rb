@@ -3,6 +3,8 @@ require_relative './monsters_ui'
 require_relative './character_view_loader'
 require_relative '../lib/characters'
 require_relative '../lib/game'
+require_relative './command_interpreter'
+require_relative './autocomplete'
 
 ##########################
 # Get CSS
@@ -21,6 +23,24 @@ def add_character_dialog
     puts response
     dialog.destroy
   end
+end
+
+def run_command_input widget
+  text = @command_input.text.strip
+  @command_input.set_text ''
+  @command_output.buffer.insert_at_cursor "%s\n" % text
+  begin
+    updated_command = Roll.translate_command(text)
+    @command_output.buffer.insert_at_cursor "#{updated_command}\n"
+    output = @game.send :eval, updated_command
+    @command_output.buffer.insert_at_cursor "=> #{output.inspect}\n"
+  rescue => ex
+    puts ex.backtrace, ex.inspect
+    @command_output.buffer.insert_at_cursor "#{ex.inspect}\n"
+  end
+  @command_scroller ||= @builder.get_object('command ScrolledWindow')
+  vadj = @command_scroller.vadjustment
+  vadj.set_value vadj.upper
 end
 
 def run_console_input widget
@@ -80,8 +100,11 @@ builder_file = "#{File.expand_path(File.dirname(__FILE__))}/main.ui"
 builder.connect_signals {|handler| method(handler) }
 window = builder.get_object("window")
 monsters_search_entry = builder.get_object('monsters-search')
+@command_input = @builder.get_object('command input')
+@command_output = @builder.get_object('command output')
 @console_input = @builder.get_object('console input')
 @console_output = @builder.get_object('console output')
+MyAutocomplete.add @command_input
 
 # Connect signal handlers to the constructed widgets
 window.signal_connect("destroy") { Gtk.main_quit }
@@ -90,6 +113,8 @@ window.signal_connect("destroy") { Gtk.main_quit }
 window.signal_connect("key-press-event") do |widget, event|
   if event.state.control_mask?
     case event.keyval
+    when Gdk::Keyval::KEY_k # Command input
+      @command_input.grab_focus
     when Gdk::Keyval::KEY_m # Search monsters
       monsters_search_entry.grab_focus
     when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit

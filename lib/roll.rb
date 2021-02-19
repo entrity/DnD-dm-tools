@@ -2,6 +2,36 @@ class Roll
   # Critical success/failure colours
   COLORS = {20 => 32, 1 => 31}
 
+  def self.translate_command command
+    tokens = command.scan(/\w+|\W+/)
+    tokens.map { |tok|
+      if matched = /(\d+)?d(\d+)(([adk])(\d)?)?/.match(tok)
+        "(%s)" % translate_roll(matched)
+      else
+        tok
+      end
+    }.join('')
+  end
+
+  # Pass in a regex match for something like `2d10k2` or minimally `d20`
+  def self.translate_roll regex_match_data
+    n = regex_match_data[1].to_i # How many dice
+    d = regex_match_data[2].to_i # How many sides on die
+    mode = regex_match_data[4] # Advantage/Disadvantage/Keep
+    moded = regex_match_data[5].to_i # How many to Keep
+    die_rolls = (0...n).map { 1 + rand(d) }
+    case mode
+    when nil
+      die_rolls.join(" + ")
+    when 'a' # Advantage
+      "#{die_rolls.inspect}.max"
+    when 'd' # Disadvantage
+      "#{die_rolls.inspect}.min"
+    when 'k' # Keep best
+      "#{die_rolls.inspect}.max(#{moded})"
+    end
+  end
+
   attr_reader :value
 
   def initialize command
