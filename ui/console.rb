@@ -5,6 +5,17 @@ module Commands
   def run_console_command widget
     Console.for_input_widget(widget).run_command
   end
+
+  def on_console_key_pressed widget, event
+    case event.keyval
+    when Gdk::Keyval::KEY_Up
+      Console.for_input_widget(widget).history_visit(-1)
+      return true
+    when Gdk::Keyval::KEY_Down
+      Console.for_input_widget(widget).history_visit(1)
+      return true
+    end
+  end
   
   private
 
@@ -26,6 +37,15 @@ module Commands
     end
 
     attr_reader :input
+
+    def history_visit inc
+      @history_cursor ||= 0
+      @history_cursor += inc
+      @history_cursor = 0 if @history_cursor > 0
+      return if @history_cursor == 0 || @history_cursor < history.length*-1
+      text = history[@history_cursor]
+      @input.buffer.set_text text, text.length
+    end
 
     def run_command
       cmd = @input.text.strip

@@ -461,6 +461,7 @@
                             <property name="can_focus">True</property>
                             <property name="placeholder_text" translatable="yes">command...</property>
                             <signal name="activate" handler="run_console_command" swapped="no"/>
+                            <signal name="key-press-event" handler="on_console_key_pressed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -585,6 +586,7 @@
                     <property name="can_focus">True</property>
                     <property name="primary_icon_stock">gtk-go-forward</property>
                     <signal name="activate" handler="run_console_command" swapped="no"/>
+                    <signal name="key-press-event" handler="on_console_key_pressed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>

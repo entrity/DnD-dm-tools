@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require "gtk3"
 require_relative './search_ui'
 require_relative './character_view_loader'
