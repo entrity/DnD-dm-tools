@@ -1,10 +1,12 @@
 require "gtk3"
-require_relative './monsters_ui'
+require_relative './search_ui'
 require_relative './character_view_loader'
 require_relative '../lib/characters'
 require_relative '../lib/game'
-require_relative './command_interpreter'
+require_relative './console'
 require_relative './autocomplete'
+
+include Commands
 
 ##########################
 # Get CSS
@@ -25,36 +27,6 @@ def add_character_dialog
   end
 end
 
-def run_command_input widget
-  text = @command_input.text.strip
-  @command_input.set_text ''
-  @command_output.buffer.insert_at_cursor "%s\n" % text
-  begin
-    updated_command = Roll.translate_command(text)
-    @command_output.buffer.insert_at_cursor "#{updated_command}\n"
-    output = @game.send :eval, updated_command
-    @command_output.buffer.insert_at_cursor "=> #{output.inspect}\n"
-  rescue => ex
-    puts ex.backtrace, ex.inspect
-    @command_output.buffer.insert_at_cursor "#{ex.inspect}\n"
-  end
-  @command_scroller ||= @builder.get_object('command ScrolledWindow')
-  vadj = @command_scroller.vadjustment
-  vadj.set_value vadj.upper
-end
-
-def run_console_input widget
-  text = @console_input.text
-  @console_input.set_text ''
-  begin
-    @console_output.buffer.insert_at_cursor "#{eval(text).inspect}\n"
-  rescue => ex
-    @console_output.buffer.insert_at_cursor "#{ex.inspect}\n"
-  end
-  @console_scroller ||= @builder.get_object('console ScrolledWindow')
-  vadj = @console_scroller.vadjustment
-  vadj.set_value vadj.upper
-end
 
 # File > Open
 def load_dialog
@@ -86,7 +58,7 @@ end
 def toggle_console_visibility
   console = @builder.get_object 'console'
   method(:toggle_visible).unbind.bind(console).call
-  @builder.get_object('console input').grab_focus if console.reveal_child?
+  @cmd_console.input.grab_focus if console.reveal_child?
 end
 
 def toggle_visible *args
@@ -99,12 +71,9 @@ builder_file = "#{File.expand_path(File.dirname(__FILE__))}/main.ui"
 @builder = builder = Gtk::Builder.new(:file => builder_file)
 builder.connect_signals {|handler| method(handler) }
 window = builder.get_object("window")
-monsters_search_entry = builder.get_object('monsters-search')
-@command_input = @builder.get_object('command input')
-@command_output = @builder.get_object('command output')
-@console_input = @builder.get_object('console input')
-@console_output = @builder.get_object('console output')
-MyAutocomplete.add @command_input
+@search_entry = builder.get_object('search Entry')
+@cmd_console = Commands::Console.create @builder.get_object('console input'), @builder.get_object('console output')
+@dice_console = Commands::DiceConsole.create @builder.get_object('dice console input'), @builder.get_object('dice console output')
 
 # Connect signal handlers to the constructed widgets
 window.signal_connect("destroy") { Gtk.main_quit }
@@ -114,9 +83,9 @@ window.signal_connect("key-press-event") do |widget, event|
   if event.state.control_mask?
     case event.keyval
     when Gdk::Keyval::KEY_k # Command input
-      @command_input.grab_focus
+      @dice_console.input.grab_focus
     when Gdk::Keyval::KEY_m # Search monsters
-      monsters_search_entry.grab_focus
+      @search_entry.grab_focus
     when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
       Gtk.main_quit
     when Gdk::Keyval::KEY_space # Toggle console
@@ -129,17 +98,26 @@ window.signal_connect("key-press-event") do |widget, event|
   end
 end
 
+def on_character_dialog_keypress widget, event
+  if event.state.control_mask?
+    case event.keyval
+    when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
+      widget.close
+    end
+  end
+end
+
 ##########################
 # Initialize Monsters UI
 monster_library = MonsterLibrary.new
-MonstersUI.new(builder, monster_library)
-builder.get_object('monsters-search').grab_focus # todo rm
+SearchUI.new(builder, monster_library)
 
 ##########################
 # Initialize Game
 @game = Game.load ARGV[0]
+Commands::Console.init(@game)
 
 ##########################
 # Start main loop
-CharacterViewLoader.new @builder, Monster.new(monster_library.list.first)
+builder.get_object('dice console input').grab_focus
 Gtk.main

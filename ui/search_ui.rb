@@ -2,13 +2,12 @@ require_relative '../lib/monster_library'
 require_relative '../lib/characters'
 require_relative './character_view_loader'
 
-class MonstersUI
+class SearchUI
   def initialize(builder, monster_library)
     @builder = builder
-    @container = builder.get_object 'monsters-list'
-    @search = builder.get_object 'monsters-search'
-    @lib = monster_library
-    @lib.list.sort {|a,b| a['name'] <=> b['name'] }.each do |m|
+    @container = builder.get_object 'search list'
+    @search = builder.get_object 'search Entry'
+    monster_library.list.sort {|a,b| a['name'] <=> b['name'] }.each do |m|
       @container.add MonsterListRow.new m, @builder
     end
     # Signals
@@ -57,7 +56,7 @@ class MonsterListRow < Gtk::ListBoxRow
   end
 
   def show
-    CharacterViewLoader.new @builder, Monster.new(@monster)
+    CharacterViewLoader.content_set @builder, Monster.new(@monster)
   end
 
   def show_in_window

@@ -1,18 +1,33 @@
-require 'pry'
-require './lib/encounter'
-require './lib/roll'
-require './lib/characters'
-require './lib/monster_library'
-require './lib/treasure'
+require_relative './constants'
+require_relative './encounter'
+require_relative './roll'
+require_relative './characters'
+require_relative './treasure'
+require 'forwardable'
+require 'singleton'
 
 class Game
-  attr_reader :party
-  alias :pcs :party
+  extend Forwardable
+  include Singleton
 
-  def initialize fpath
-    @fpath = fpath # Attr overwritten if file exists s.t. file is not overwritten
-    @notes ||= []
-    @party = {}
+  attr_reader    :cast, :console_histories, :encounters, :notes, :terrain
+  attr_accessor  :encounter, :fpath
+
+  def self.load fpath=nil
+    if fpath
+      Marshal.load File.read(fpath).tap {|game| game.fpath = fpath }
+    else
+      new
+    end
+  end
+
+  def initialize fpath=nil
+    @cast = [] # PCs and NPCs
+    @console_histories = {} # History of console commands
+    @encounter = Encounter.new # Current encounter
+    @encounters = [] # Array of Encounter
+    @fpath = fpath
+    @notes = []
     @terrain = nil
   end
 
@@ -61,23 +76,5 @@ class Game
       selection = selection.map {|m| m.values_at *fields.map(&:to_s) }
     end
     selection
-  end
-
-  def note text; @notes << text; end
-
-  def start
-    binding.pry quiet: true # Run `ls` for common commands
-  end
-
-  # Display array of arrays as a table
-  def table data
-    n_cols = data&.first&.length.to_i
-    n_rows = data&.length.to_i
-    col_lens = (0...n_cols).map {|i| data.map {|r| r[i].to_s.length }.max }
-    data.each do |row|
-      strings = row.map.with_index { |col, i| "%#{col_lens[i]}s" % col }
-      puts strings.join(" | ")
-    end
-    nil
   end
 end

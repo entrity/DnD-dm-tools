@@ -5,6 +5,19 @@ require_relative './markup'
 class CharacterViewLoader
   include Markup
 
+  # Set Character view in the 'content ViewPort'
+  def self.content_set builder, character
+    @@wrapper ||= builder.get_object 'content Box'
+    @@sub_builder_file ||= "#{File.expand_path(File.dirname(__FILE__))}/character_view.ui"
+    @@sub_builder ||= Gtk::Builder.new(:file => @@sub_builder_file)
+    @@widget ||= @@sub_builder.get_object 'character view'
+    @@wrapper.children.each {|c| @@wrapper.remove_child c }
+    @@wrapper.set_child @@widget
+    self.new @@sub_builder, character
+  end
+
+  private
+
   def initialize builder, character
     @builder = builder
     @character = character
@@ -40,7 +53,7 @@ class CharacterViewLoader
     set 'char-view spells', array_info(character.spell_list)
     set 'char-view special-abilities', array_info(character.special_abilities)
     set 'char-view actions', array_info(character.actions)
-    set 'char-view reactions', character.reactions
+    set 'char-view reactions', array_info(character.reactions)
     set 'char-view legendary', legendary
     ################
     ################
@@ -56,9 +69,13 @@ class CharacterViewLoader
   end
 
   def array_info data, default='(none)'
-    data.map {|act|
-      [bold(act['name']), act['desc']].join(" ")
-    }.join("\n").presence || default
+    if data.is_a? Array
+      data.map {|act|
+        [bold(act['name']), act['desc']].join(" ")
+      }.join("\n").presence || default
+    else
+      data || default
+    end
   end
 
   def hash_info data, default='(none)'
@@ -91,10 +108,10 @@ class CharacterViewLoader
       text += " walk #{walk}"
     end
     if swim = @character.speed['swim'].presence
-      text += "swim #{swim}"
+      text += " swim #{swim}"
     end
     if fly = @character.speed['fly'].presence
-      text += "fly #{fly}"
+      text += " fly #{fly}"
     end
     text
   end

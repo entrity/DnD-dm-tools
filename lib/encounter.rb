@@ -1,25 +1,17 @@
-require './lib/monster_library'
+# require './lib/monster_library'
 require 'forwardable'
 
 class Encounter
   extend Forwardable
-  attr_reader :npcs, :party
-  attr_reader :initiative_order
 
-  def initialize party, npcs=[]
-    @party = party
-    @npcs = Array(npcs)
-    @initiative_cursor = 0
-    @initiative_order = []
+  attr_reader :cast
+
+  def initialize
+    @cast = []
   end
 
-  # Add NPC based on slug
-  def add slug
-    if foe = Monster[slug]
-      @npcs << foe
-    else
-      raise "No foe found for slug #{slug}"
-    end
+  def add character
+    @cast.push(character) unless @cast.include?(character)
   end
 
   # Compute CR based on the XP for this encounter
@@ -34,7 +26,6 @@ class Encounter
 
   # Roll initiative
   def init name_or_pc=nil, roll_value=nil
-    @initiative ||= {}
     # Set pc roll
     if x = name_or_pc
       pc = x.is_a?(String) ? @party[x] : x
