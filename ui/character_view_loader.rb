@@ -7,14 +7,22 @@ class CharacterViewLoader
 
   # Set Character view in the 'content ViewPort'
   def self.content_set builder, character
+    @@character = character
     @@wrapper ||= builder.get_object 'content Box'
     @@sub_builder_file ||= "#{File.expand_path(File.dirname(__FILE__))}/character_view.ui"
     @@sub_builder ||= Gtk::Builder.new(:file => @@sub_builder_file)
+    @@sub_builder.connect_signals {|handler| self.method(handler) }
     @@widget ||= @@sub_builder.get_object 'character view'
     @@wrapper.children.each {|c| @@wrapper.remove_child c }
     @@wrapper.set_child @@widget
     self.new @@sub_builder, character
   end
+
+  def self.open_character_dialog_from_cvl
+    puts "open editor called"
+    open_character_dialog @@character
+  end
+
 
   private
 

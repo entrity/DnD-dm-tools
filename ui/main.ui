@@ -283,7 +283,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="add_character_dialog" swapped="no"/>
+                        <signal name="clicked" handler="open_character_dialog" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

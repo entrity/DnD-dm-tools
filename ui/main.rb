@@ -5,8 +5,10 @@ require_relative '../lib/characters'
 require_relative '../lib/game'
 require_relative './console'
 require_relative './autocomplete'
+require_relative './character_dialog'
 
 include Commands
+include CharacterDialog
 
 ##########################
 # Get CSS
@@ -16,17 +18,6 @@ Gtk::StyleContext.add_provider_for_screen(
     Gdk::Screen.default,
     style_provider,
 )
-
-def add_character_dialog
-  builder_file = "#{File.expand_path(File.dirname(__FILE__))}/character_dialog.ui"
-  builder = Gtk::Builder.new(:file => builder_file)
-  dialog = builder.objects.find {|o| o.is_a? Gtk::Dialog }
-  dialog.run do |response|
-    puts response
-    dialog.destroy
-  end
-end
-
 
 # File > Open
 def load_dialog
@@ -94,15 +85,6 @@ window.signal_connect("key-press-event") do |widget, event|
       notebook.set_page(0)
     when Gdk::Keyval::KEY_2 # Page 2
       notebook.set_page(1)
-    end
-  end
-end
-
-def on_character_dialog_keypress widget, event
-  if event.state.control_mask?
-    case event.keyval
-    when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
-      widget.close
     end
   end
 end
