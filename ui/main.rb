@@ -83,7 +83,7 @@ window.signal_connect("key-press-event") do |widget, event|
     when Gdk::Keyval::KEY_f # Search
       @search_entry.grab_focus
     when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
-      Gtk.main_quit
+      @gtk_main_loop.quit
     when Gdk::Keyval::KEY_space # Toggle console
       toggle_console_visibility
     when Gdk::Keyval::KEY_1 # Page 1
@@ -101,6 +101,7 @@ Thread.new do
   CastUI.init(@builder)
   CharacterViewLoader.init(@builder)
 end
+@builder.get_object('dice console input').grab_focus
 
 ##########################
 # Initialize Game
@@ -109,5 +110,12 @@ Commands::Console.init(@game)
 
 ##########################
 # Start main loop
-@builder.get_object('dice console input').grab_focus
-Gtk.main
+@gtk_main_loop = GLib::MainLoop.new
+begin
+  @gtk_main_loop.run
+rescue => ex
+  $stderr.puts ex.inspect
+  $stderr.puts ex.backtrace
+  $stderr.puts ex.inspect
+  Game.instance.dump 'crash.sav'
+end
