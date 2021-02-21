@@ -11,7 +11,7 @@ require_relative './cast'
 require_relative './console'
 
 include Cast
-include CharacterDialog
+include CharacterDialogFunctions
 include CharacterView
 include Commands
 

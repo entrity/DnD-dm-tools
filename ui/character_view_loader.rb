@@ -32,7 +32,7 @@ class CharacterViewLoader
   end
 
   def self.open_character_dialog_from_cvl
-    open_character_dialog @@character # Call fn in main
+    CharacterDialog.instance.open @@character
   end
 
   def self.loaded_character
