@@ -79,8 +79,7 @@ class CharacterDialog < Gtk::Dialog
     def load char=nil
       char ||= @char
       set 'name', char.name
-      set 'player class', char.klass if char.is_a? Pc
-      set 'monster class', char.klass if char.is_a? Monster
+      set 'character class', char.klass
       set 'type', char.type
       set 'subtype', char.subtype
       set 'group', char.group

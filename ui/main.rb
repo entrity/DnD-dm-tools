@@ -80,7 +80,7 @@ window.signal_connect("key-press-event") do |widget, event|
     case event.keyval
     when Gdk::Keyval::KEY_k # Command input
       @dice_console.input.grab_focus
-    when Gdk::Keyval::KEY_m # Search monsters
+    when Gdk::Keyval::KEY_f # Search
       @search_entry.grab_focus
     when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
       Gtk.main_quit
@@ -95,14 +95,16 @@ window.signal_connect("key-press-event") do |widget, event|
 end
 
 ##########################
-# Initialize Monsters UI
+# Initialize UIs
 Thread.new do
   SearchUI.new(@builder)
+  CastUI.init(@builder)
+  CharacterViewLoader.init(@builder)
 end
 
 ##########################
 # Initialize Game
-@game = Game.load ARGV[0]
+Game.load ARGV[0]
 Commands::Console.init(@game)
 
 ##########################

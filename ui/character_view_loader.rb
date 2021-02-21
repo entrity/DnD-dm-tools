@@ -1,34 +1,43 @@
 # View character in centre pane
 require_relative '../lib/util'
 require_relative './markup'
+require_relative './cast_ui'
 
 # Include this in main
 module CharacterView
-  def toggle_character_inclusion_in_cast widget
+  def toggle_character_inclusion_in_cast(widget)
     char = CharacterViewLoader.loaded_character
+    game = Game.instance
     if widget.active?
-      @game.cast.push(char) unless @game.cast.include?(char)
+      CastUI.instance.add char
     else
-      @game.cast.delete(char)
+      CastUI.instance.remove char
     end
-    cast_view_reload
   end
 end
 
 class CharacterViewLoader
   include Markup
 
+  def self.init parent_builder
+    @@parent_builder = parent_builder
+  end
+
   # Set Character view in the 'content ViewPort'
-  def self.content_set builder, character
+  def self.content_set character
+    raise RuntimeError.new("Uninitialized CharacterViewLoader") if @@parent_builder.nil?
     @@character = character
-    @@wrapper ||= builder.get_object 'content Box'
-    @@sub_builder_file ||= File.join XML_DIR, "character_view.ui"
-    @@sub_builder ||= Gtk::Builder.new(:file => @@sub_builder_file)
-    @@sub_builder.connect_signals {|handler| self.method(handler) }
-    @@widget ||= @@sub_builder.get_object 'character view'
+    @@wrapper ||= @@parent_builder.get_object 'content Box'
+    @@builder ||= begin
+      builder_file ||= File.join XML_DIR, "character_view.ui"
+      Gtk::Builder.new(:file => builder_file).tap {|builder|
+        @@widget = builder.get_object 'character view'
+        builder.connect_signals {|handler| self.method(handler) }
+      }
+    end
     @@wrapper.children.each {|c| @@wrapper.remove_child c }
     @@wrapper.set_child @@widget
-    self.new @@sub_builder, character
+    self.new character
   end
 
   def self.open_character_dialog_from_cvl
@@ -41,9 +50,9 @@ class CharacterViewLoader
 
   private
 
-  def initialize builder, character
-    @builder = builder
+  def initialize character
     @character = character
+    @@builder.get_object('cast ToggleButton').set_active Game.instance.cast.include?(@character)
     set 'char-view name', name_label
     ################
     set 'char-view hp', hp
@@ -116,10 +125,6 @@ class CharacterViewLoader
     dice.to_s&.empty? ? hp : hp + " (#{dice})"
   end
 
-  def is_player?
-    !MonsterLibrary.instance.has_key? @character.klass
-  end
-
   # Gray key and as-is value
   def keyval key, val, opts={}
     return if opts[:autohide] && !val.presence
@@ -139,16 +144,11 @@ class CharacterViewLoader
   end
 
   def name_label
-    colored = color(character_color, @character.name)
-    if @character.name != @character.klass && @character.klass.presence
-      "%s (%s)" % [colored, @character.klass]
-    else
-      colored
-    end
+    colored_character(@character, true)
   end
 
   def set id, markup, opts={}
-    obj = @builder.get_object(id)
+    obj = @@builder.get_object(id)
     obj.set_visible(!!markup.presence) if opts[:autohide]
     obj.set_markup(markup || '(ERRR)')
   end

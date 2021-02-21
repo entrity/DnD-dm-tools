@@ -8,7 +8,7 @@ class SearchUI
     @container = builder.get_object 'search list'
     @search = builder.get_object 'search Entry'
     MonsterLibrary.instance.list.sort {|a,b| a['name'] <=> b['name'] }.each do |m|
-      @container.add MonsterListRow.new m, @builder
+      @container.add MonsterListRow.new(m)
     end
     # Signals
     @container.set_filter_func do |item, a, b|
@@ -24,9 +24,8 @@ end
 class MonsterListRow < Gtk::ListBoxRow
   attr_reader :monster
 
-  def initialize monster, builder
+  def initialize monster
     super()
-    @builder = builder
     @monster = monster
     # Label
     lbl = Gtk::Button.new label: monster['name']
@@ -40,6 +39,8 @@ class MonsterListRow < Gtk::ListBoxRow
     # Signals
     self.signal_connect("key-press-event") do |widget, event|
       case event.keyval
+      when Gdk::Keyval::KEY_s
+        CastUI.instance.add Monster.new(@monster)
       when Gdk::Keyval::KEY_e
         Game.encounter.add Monster.new(monster)
       when Gdk::Keyval::KEY_w
@@ -56,7 +57,7 @@ class MonsterListRow < Gtk::ListBoxRow
   end
 
   def show
-    CharacterViewLoader.content_set @builder, Monster.new(@monster)
+    CharacterViewLoader.content_set Monster.new(@monster)
   end
 
   def show_in_window

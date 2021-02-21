@@ -32,8 +32,7 @@ module Commands
     end
 
     def self.init game
-      @@game = game
-      raise ArgumentError.new("Nil game") if @@game.nil?
+      raise ArgumentError.new("Nil game") if Game.instance.nil?
     end
 
     attr_reader :input
