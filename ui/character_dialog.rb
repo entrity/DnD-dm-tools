@@ -39,7 +39,10 @@ class CharacterDialog < Gtk::Dialog
     add_buttons [Gtk::Stock::OK, Gtk::ResponseType::ACCEPT], [Gtk::Stock::CANCEL, Gtk::ResponseType::CANCEL]
     signal_connect('response') { |dialog, response|
       hide
-      DialogLoader.new(@@builder, @character).dump if Gtk::ResponseType::ACCEPT == response
+      if Gtk::ResponseType::ACCEPT == response
+        DialogLoader.new(@@builder, @character).dump
+        CastUI.instance.reload true
+      end
     }
   end
 
@@ -73,7 +76,7 @@ class CharacterDialog < Gtk::Dialog
       @char.int = get('int').to_i
       @char.wis = get('wis').to_i
       @char.cha = get('cha').to_i
-      CharacterViewLoader.content_set $main_builder, @char      
+      CharacterViewLoader.content_set @char
     end
 
     def load char=nil
@@ -101,7 +104,7 @@ class CharacterDialog < Gtk::Dialog
     def get_obj(id); @builder.get_object(id); end
 
     def set id, value
-      @builder.get_object(id).set_text(value.to_s) unless value.nil?
+      @builder.get_object(id).set_text(value.to_s)
     end
   end
 end
@@ -111,7 +114,7 @@ Thread.new do
 end
 
 module CharacterDialogFunctions
-  def character_dialog_open *args
-    CharacterDialog.instance.open
+  def character_dialog_open_new *args
+    CharacterDialog.instance.open nil
   end
 end
