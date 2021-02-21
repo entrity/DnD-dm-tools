@@ -2,11 +2,16 @@
 
 require 'json'
 require 'set'
+require 'singleton'
+require_relative './constants'
 
 class MonsterLibrary
+  include Singleton
+
   def initialize
+    @open5e_array = []
     load_monsters
-    load_environments
+    # load_environments
   end
 
   def [] name_or_idx
@@ -20,6 +25,8 @@ class MonsterLibrary
   def for_environment name
     @environments[name.to_s.capitalize].map {|m| m.values_at('name', 'challenge_rating').join(' / ')}.sort
   end
+
+  def has_key? key; @open5e_hash.has_key? key; end
 
   def list; @open5e_array; end
 
@@ -65,7 +72,7 @@ class MonsterLibrary
 
   def load_environments
     # Apply environment data from https://donjon.bin.sh/5e/monsters/
-    donjon_monsters = JSON.parse(File.read 'data/donjon.bin-monsters.json')
+    donjon_monsters = JSON.parse(File.read File.join DATA_DIR, 'donjon.bin-monsters.json')
     @environments = {'any' => Set.new}
     @open5e_hash.each do |name, monster|
       if donjon_data = donjon_monsters[name]
@@ -85,12 +92,10 @@ class MonsterLibrary
 
   def load_monsters
     # Get monsters from https://api.open5e.com/ files
-    @open5e_array = Dir['data/open5e-monsters*'].reduce([]) do |acc, fpath|
+    @open5e_array = Dir[File.join DATA_DIR, 'open5e-monsters*'].reduce([]) do |acc, fpath|
       results = JSON.parse(File.read fpath)['results']
       acc + results
     end
     @open5e_hash = @open5e_array.map {|m| [m['name'], m]}.to_h
   end
 end
-
-$monsters = MonsterLibrary.new

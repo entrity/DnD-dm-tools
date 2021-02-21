@@ -1,8 +1,12 @@
-require './lib/ansi'
-require './lib/table'
+require_relative './ansi'
+require_relative './table'
+
+class PlayerClassName < String; end
 
 class Character
+  attr_accessor :is_pc
   attr_reader :attrs
+  attr_writer :klass
 
   def self.[] name_or_slug
     Character.new $monsters[name_or_slug]
@@ -17,6 +21,8 @@ class Character
     eval "#{challenge_rating}.0"
   end
 
+  def klass; @klass || name; end
+
   def inspect
     out = [h1(name), Ansi.faint('cr'), challenge_rating, Ansi.faint('hp'), color_hp, Ansi.faint('ac'), ac, Ansi.faint('spd'), speed].join(' ') + "\n"
     out += %i[str dex con int wis cha].map {|s| [Ansi.faint(s), send(s)]}.join(" ")
@@ -26,6 +32,8 @@ class Character
     out += "\n\n#{Ansi.yellow 'Special abilities'}\n#{_special_abilities}" if _special_abilities
     out
   end
+
+  def level; challenge_rating; end
 
   def mod attribute_score
     ((attribute_score - 10) / 2).floor
@@ -42,11 +50,11 @@ class Character
   def self.attr attr_name, *aliases
     aliases.unshift(attr_name).each do |method_name|
       define_method method_name do
-        @attrs[attr_name.to_s]
+        instance_variable_get(:@attrs)&.[] attr_name.to_s
       end
 
       define_method "#{method_name}=" do |value|
-        @attrs[attr_name.to_s] = value
+        instance_variable_get(:@attrs)&.[]= attr_name.to_s, value
       end
     end
   end
@@ -87,6 +95,7 @@ class Character
   attr :armor_class, :ac # 15,
   attr :armor_desc # "studded leather",
   attr :hit_points, :hp # 65,
+  attr :max_hp
   attr :hit_dice # "10d8",
   attr :speed # {"walk # 30},
   attr :spell_list
@@ -108,11 +117,19 @@ class Character
   attr :damage_resistances # "",
   attr :damage_immunities # "",
   attr :condition_immunities # "",
+  attr :legendary_desc
+  attr :legendary_actions
+  attr :reactions # "passive Perception 10",
   attr :senses # "passive Perception 10",
   attr :languages # "any two languages",
   attr :challenge_rating # "2",
   attr :actions
   attr :special_abilities
+
+  PLAYER_CLASSES = %w[
+    Barbarian Bard Cleric Druid Fighter Monk
+    Paladin Ranger Rogue Sorcerer Warlock Wizard
+  ].map {|s| PlayerClassName.new s }.freeze
 end
 
 class Pc < Character

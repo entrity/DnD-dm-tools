@@ -39,11 +39,13 @@
                     <property name="layout_style">start</property>
                     <child>
                       <object class="GtkToggleButton">
-                        <property name="label" translatable="yes">Char</property>
+                        <property name="label" translatable="yes">Ca_st</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="tooltip_text" translatable="yes">Add to PCs/NPCs</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_character_inclusion_in_cast" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -53,11 +55,12 @@
                     </child>
                     <child>
                       <object class="GtkToggleButton">
-                        <property name="label" translatable="yes">Enctr</property>
+                        <property name="label" translatable="yes">E_nctr</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="tooltip_text" translatable="yes">Add to encounter</property>
+                        <property name="use_underline">True</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -67,7 +70,7 @@
                     </child>
                     <child>
                       <object class="GtkButton">
-                        <property name="label" translatable="yes">_Edit</property>
+                        <property name="label" translatable="yes">E_dit</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>

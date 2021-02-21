@@ -2,15 +2,18 @@
 
 require "gtk3"
 require_relative './search_ui'
-require_relative './character_view_loader'
 require_relative '../lib/characters'
 require_relative '../lib/game'
-require_relative './console'
 require_relative './autocomplete'
 require_relative './character_dialog'
+require_relative './character_view_loader'
+require_relative './cast'
+require_relative './console'
 
-include Commands
+include Cast
 include CharacterDialog
+include CharacterView
+include Commands
 
 ##########################
 # Get CSS
@@ -60,11 +63,11 @@ end
 
 ##########################
 # Construct a Gtk::Builder instance and load our UI description
-builder_file = "#{File.expand_path(File.dirname(__FILE__))}/main.ui"
-@builder = builder = Gtk::Builder.new(:file => builder_file)
-builder.connect_signals {|handler| method(handler) }
-window = builder.get_object("window")
-@search_entry = builder.get_object('search Entry')
+builder_file = File.join XML_DIR, "main.ui"
+@builder = $main_builder = Gtk::Builder.new(:file => builder_file)
+@builder.connect_signals {|handler| method(handler) }
+window = @builder.get_object("window")
+@search_entry = @builder.get_object('search Entry')
 @cmd_console = Commands::Console.create @builder.get_object('console input'), @builder.get_object('console output')
 @dice_console = Commands::DiceConsole.create @builder.get_object('dice console input'), @builder.get_object('dice console output')
 
@@ -93,8 +96,9 @@ end
 
 ##########################
 # Initialize Monsters UI
-monster_library = MonsterLibrary.new
-SearchUI.new(builder, monster_library)
+Thread.new do
+  SearchUI.new(@builder)
+end
 
 ##########################
 # Initialize Game
@@ -103,5 +107,5 @@ Commands::Console.init(@game)
 
 ##########################
 # Start main loop
-builder.get_object('dice console input').grab_focus
+@builder.get_object('dice console input').grab_focus
 Gtk.main

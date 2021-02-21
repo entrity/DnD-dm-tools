@@ -3,11 +3,11 @@ require_relative '../lib/characters'
 require_relative './character_view_loader'
 
 class SearchUI
-  def initialize(builder, monster_library)
+  def initialize(builder)
     @builder = builder
     @container = builder.get_object 'search list'
     @search = builder.get_object 'search Entry'
-    monster_library.list.sort {|a,b| a['name'] <=> b['name'] }.each do |m|
+    MonsterLibrary.instance.list.sort {|a,b| a['name'] <=> b['name'] }.each do |m|
       @container.add MonsterListRow.new m, @builder
     end
     # Signals

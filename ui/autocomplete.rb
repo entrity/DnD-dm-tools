@@ -2,7 +2,7 @@ require "gtk3"
 
 module MyAutocomplete
   # Add autocomplete to a Gtk::Entry object
-  def self.add entry
+  def self.add entry, &block
     model = Gtk::ListStore.new String
     model.append.set_value 0, 'sd'
     model.append.set_value 0, 'foo'
@@ -15,6 +15,7 @@ module MyAutocomplete
     completion.set_match_func do |*args|
       self.match_func *args
     end
+    yield(model, completion) if block_given?
     entry.set_completion completion   
   end
   

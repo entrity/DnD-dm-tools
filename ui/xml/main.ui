@@ -262,7 +262,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <child>
-                              <object class="GtkListBox">
+                              <object class="GtkListBox" id="cast ListBox">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                               </object>

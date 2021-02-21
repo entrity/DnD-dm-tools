@@ -2,6 +2,19 @@
 require_relative '../lib/util'
 require_relative './markup'
 
+# Include this in main
+module CharacterView
+  def toggle_character_inclusion_in_cast widget
+    char = CharacterViewLoader.loaded_character
+    if widget.active?
+      @game.cast.push(char) unless @game.cast.include?(char)
+    else
+      @game.cast.delete(char)
+    end
+    cast_view_reload
+  end
+end
+
 class CharacterViewLoader
   include Markup
 
@@ -9,7 +22,7 @@ class CharacterViewLoader
   def self.content_set builder, character
     @@character = character
     @@wrapper ||= builder.get_object 'content Box'
-    @@sub_builder_file ||= "#{File.expand_path(File.dirname(__FILE__))}/character_view.ui"
+    @@sub_builder_file ||= File.join XML_DIR, "character_view.ui"
     @@sub_builder ||= Gtk::Builder.new(:file => @@sub_builder_file)
     @@sub_builder.connect_signals {|handler| self.method(handler) }
     @@widget ||= @@sub_builder.get_object 'character view'
@@ -19,17 +32,19 @@ class CharacterViewLoader
   end
 
   def self.open_character_dialog_from_cvl
-    puts "open editor called"
-    open_character_dialog @@character
+    open_character_dialog @@character # Call fn in main
   end
 
+  def self.loaded_character
+    @@character
+  end
 
   private
 
   def initialize builder, character
     @builder = builder
     @character = character
-    set 'char-view name', color(character_color, character.name)
+    set 'char-view name', name_label
     ################
     set 'char-view hp', hp
     set 'char-view level', level
@@ -87,15 +102,28 @@ class CharacterViewLoader
   end
 
   def hash_info data, default='(none)'
-    data.map { |k,v|
+    data&.map { |k,v|
       [bold(k), v].join(" ")
-    }.join("\n").presence || default
+    }&.join("\n").presence || default
   end
 
   def hp
     hp = keyval('hp', bold(colored_hp))
+    if max_hp = @character.max_hp.to_i != 0
+      hp += "/#{max_hp}"
+    end
     dice = @character.hit_dice
-    dice&.empty? ? hp : hp + " (#{dice})"
+    dice.to_s&.empty? ? hp : hp + " (#{dice})"
+  end
+
+  def is_player?
+    !MonsterLibrary.instance.has_key? @character.klass
+  end
+
+  # Gray key and as-is value
+  def keyval key, val, opts={}
+    return if opts[:autohide] && !val.presence
+    [gray(key), val].join(" ")
   end
 
   def legendary default='(none)'
@@ -110,16 +138,33 @@ class CharacterViewLoader
     end
   end
 
+  def name_label
+    colored = color(character_color, @character.name)
+    if @character.name != @character.klass && @character.klass.presence
+      "%s (%s)" % [colored, @character.klass]
+    else
+      colored
+    end
+  end
+
+  def set id, markup, opts={}
+    obj = @builder.get_object(id)
+    obj.set_visible(!!markup.presence) if opts[:autohide]
+    obj.set_markup(markup || '(ERRR)')
+  end
+
   def speed
     text = gray('speed')
-    if walk = @character.speed['walk'].presence
-      text += " walk #{walk}"
-    end
-    if swim = @character.speed['swim'].presence
-      text += " swim #{swim}"
-    end
-    if fly = @character.speed['fly'].presence
-      text += " fly #{fly}"
+    if speed = @character.speed.presence
+      if walk = speed['walk'].presence
+        text += " walk #{walk}"
+      end
+      if swim = speed['swim'].presence
+        text += " swim #{swim}"
+      end
+      if fly = speed['fly'].presence
+        text += " fly #{fly}"
+      end
     end
     text
   end
@@ -129,19 +174,5 @@ class CharacterViewLoader
     text += " #{@character.subtype}" if @character.subtype.presence
     text += " #{@character.group}" if @character.group.presence
     text += "; #{@character.alignment}"
-  end
-
-  # Gray key and as-is value
-  def keyval key, val, opts={}
-    return if opts[:autohide] && !val.presence
-    [gray(key), val].join(" ")
-  end
-  def is_player?
-    !@character.is_a? Monster
-  end
-  def set id, markup, opts={}
-    obj = @builder.get_object(id)
-    obj.set_visible(!!markup.presence) if opts[:autohide]
-    obj.set_markup(markup || '(ERRR)')
   end
 end
