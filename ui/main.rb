@@ -7,18 +7,21 @@ require_relative '../lib/game'
 require_relative './autocomplete'
 require_relative './character_dialog'
 require_relative './character_view_loader'
-require_relative './cast'
+# require_relative './cast'
+require_relative './cast_ui'
 require_relative './console'
+require_relative './encounter_ui'
 
-include Cast
+# include Cast
 include CharacterDialogFunctions
 include CharacterView
 include Commands
+include EncounterUI::Functions
 
 ##########################
 # Get CSS
 style_provider = Gtk::CssProvider.new
-style_provider.load_from_file Gio::File.new_for_path 'style.css'
+style_provider.load_from_file Gio::File.new_for_path File.join File.dirname(__FILE__), 'style.css'
 Gtk::StyleContext.add_provider_for_screen(
     Gdk::Screen.default,
     style_provider,
@@ -46,6 +49,10 @@ def save_dialog(widget, save_as=nil)
   end
   puts "Saving to #{Game.instance.fpath}"
   Game.instance.dump
+end
+
+def load_latest_encounter
+  EncounterUI.instance.load_encounter
 end
 
 def toggle_pcs
@@ -99,23 +106,23 @@ end
 Thread.new do
   SearchUI.new(@builder)
   CastUI.init(@builder)
+  EncounterUI.instance.init(@builder)
   CharacterViewLoader.init(@builder)
 end
 @builder.get_object('dice console input').grab_focus
 
 ##########################
 # Initialize Game
-Game.load ARGV[0]
-Commands::Console.init(@game)
+Game.instance.load ARGV[0]
+Game.instance.cast.each {|m| CastUI.instance.add m }
+CastUI.instance.reload
+Commands::Console.init(Game.instance)
 
 ##########################
 # Start main loop
 @gtk_main_loop = GLib::MainLoop.new
 begin
   @gtk_main_loop.run
-rescue => ex
-  $stderr.puts ex.inspect
-  $stderr.puts ex.backtrace
-  $stderr.puts ex.inspect
-  Game.instance.dump 'crash.sav'
+ensure
+  Game.instance.dump 'autosave.sav'
 end

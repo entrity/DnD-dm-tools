@@ -73,11 +73,11 @@ module Commands
     end
 
     def evaluate cmd
-      @@game.send :eval, cmd
+      Game.instance.send :eval, cmd
     end
 
     def history
-      @@game.console_histories[@input.name] ||= []
+      Game.instance.console_histories[@input.name] ||= []
     end
   end
 

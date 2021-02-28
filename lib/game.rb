@@ -13,22 +13,23 @@ class Game
   attr_reader    :cast, :console_histories, :encounters, :notes, :terrain
   attr_accessor  :encounter, :fpath
 
-  def self.load fpath=nil
-    if fpath
-      Marshal.load File.read(fpath).tap {|game| game.fpath = fpath }
-    else
-      new
-    end
+  def initialize fpath=nil
+    @cast ||= [] # PCs and NPCs
+    @console_histories ||= {} # History of console commands
+    @encounters ||= [] # Array of Encounter
+    @encounter ||= Encounter.new # Current encounter
+    @fpath ||= fpath
+    @notes ||= []
+    @terrain ||= nil
   end
 
-  def initialize fpath=nil
-    @cast = [] # PCs and NPCs
-    @console_histories = {} # History of console commands
-    @encounter = Encounter.new # Current encounter
-    @encounters = [] # Array of Encounter
-    @fpath = fpath
-    @notes = []
-    @terrain = nil
+  def load fpath
+    if fpath && File.exists?(fpath)
+      puts "Game loaded from #{fpath}"
+      @fpath = fpath
+      attrs = Marshal.load File.binread fpath
+      attrs.each {|k,v| instance_variable_set(k,v) }
+    end
   end
 
   # CRs for current party for all difficulties
@@ -37,23 +38,11 @@ class Game
   end
 
   # Save state to file
-  def dump
-    File.write @fpath, Marshal.dump(self)
-    puts "Saved to #{@fpath}"
-  end
-
-  # Start a random encounter
-  def encounter difficulty, terrain=nil
-    terrain ||= @terrain
-    $encounter = Encounter.random @party, difficulty, terrain
-  end
-
-  def increment_fpath
-    if File.exists?(@fpath)
-      split = @fpath.match(/(.*?)(\d+$)/)
-      stem = split&.[](1) || @fpath
-      number = 1 + split&.[](2).to_i
-      @fpath = "#{stem}#{number}"
+  def dump fpath=nil
+    if fpath ||= @fpath
+      attrs = instance_variables.map {|v| [v, instance_variable_get(v)] }.to_h
+      File.binwrite fpath, Marshal.dump(attrs)
+      puts "Saved to #{fpath}"
     end
   end
 

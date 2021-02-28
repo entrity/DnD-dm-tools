@@ -14,6 +14,16 @@ module CharacterView
       CastUI.instance.remove char
     end
   end
+
+  def toggle_character_inclusion_in_encounter(widget)
+    char = CharacterViewLoader.loaded_character
+    game = Game.instance
+    if widget.active?
+      EncounterUI.instance.add_character char
+    else
+      EncounterUI.instance.remove_character char
+    end
+  end
 end
 
 class CharacterViewLoader
@@ -53,6 +63,7 @@ class CharacterViewLoader
   def initialize character
     @character = character
     @@builder.get_object('cast ToggleButton').set_active Game.instance.cast.include?(@character)
+    @@builder.get_object('encounter ToggleButton').set_active Game.instance.encounter.cast.include?(@character)
     set 'char-view name', name_label
     ################
     set 'char-view hp', hp

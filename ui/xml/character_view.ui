@@ -54,13 +54,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToggleButton">
+                      <object class="GtkToggleButton" id="encounter ToggleButton">
                         <property name="label" translatable="yes">E_nctr</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="tooltip_text" translatable="yes">Add to encounter</property>
                         <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_character_inclusion_in_encounter" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
