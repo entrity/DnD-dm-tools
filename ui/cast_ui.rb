@@ -5,6 +5,8 @@ require_relative 'markup'
 class CastUI
   include Singleton
 
+  @@builder = nil
+
   def self.init builder
     @@builder = builder
   end

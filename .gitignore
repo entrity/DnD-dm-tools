@@ -1,3 +1,9 @@
 *~
 *.bak
+*.log
+*.pyc
+*.sav
+*.tmp
 test
+tmp
+tmp.*

@@ -1,5 +1,6 @@
 # require './lib/monster_library'
 require 'forwardable'
+require 'set'
 
 class Encounter
   extend Forwardable
@@ -7,47 +8,29 @@ class Encounter
   attr_reader :cast
 
   def initialize
-    @cast = []
+    @cast = SortedSet.new
+    @initiative_order = {}
   end
 
-  def add character
-    @cast.push(character) unless @cast.include?(character)
-  end
+  def add character; @cast.add character; end
 
   # Compute CR based on the XP for this encounter
-  def cr
-    cr_for_xp(xp)
-  end
+  def cr; cr_for_xp(xp); end
 
   # Compute CR for party+difficulty (DMG p.275). Returns float
   def cr_for_party difficulty
     self.class.crs_for_party(@party)[difficulty-1]
   end
 
-  # Roll initiative
-  def init name_or_pc=nil, roll_value=nil
-    # Set pc roll
-    if x = name_or_pc
-      pc = x.is_a?(String) ? @party[x] : x
-      return puts "No PC found for #{name}" if pc.nil?
-      @initiative[pc] = roll_value
-    end
-    # Roll for npcs
-    @npcs.each {|npc| @initiative[npc] = npc.roll_initiative }
-    @initiative_order = @initiative.to_a.sort {|a,b| b[1]<=>a[1]}.map {|x| x[0]}
-  end
-
-  # Return the next character in the initiative order, update the cursor.
-  def pop
-    character = @initiative_order[@initiative_cursor]
-    @initiative_cursor += 1
-    @initiative_cursor = 0 if @initiative_cursor >= @initiative_order.length
-    character
-  end
+  def initiative_for character; @initiative_order[character]; end
 
   def hoard
     Treasure.hoard cr
   end
+
+  def remove character; @cast.delete character; end
+
+  def set_initiative character, roll_value; @initiative_order[character] = roll_value; end
 
   def treasure
     Treasure.individual cr

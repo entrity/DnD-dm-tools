@@ -7,12 +7,10 @@ require_relative '../lib/game'
 require_relative './autocomplete'
 require_relative './character_dialog'
 require_relative './character_view_loader'
-# require_relative './cast'
 require_relative './cast_ui'
 require_relative './console'
 require_relative './encounter_ui'
 
-# include Cast
 include CharacterDialogFunctions
 include CharacterView
 include Commands
@@ -102,21 +100,21 @@ window.signal_connect("key-press-event") do |widget, event|
 end
 
 ##########################
+# Initialize Game
+Game.instance.load ARGV[0]
+Commands::Console.init(Game.instance)
+
+##########################
 # Initialize UIs
 Thread.new do
   SearchUI.new(@builder)
   CastUI.init(@builder)
   EncounterUI.instance.init(@builder)
   CharacterViewLoader.init(@builder)
+  Game.instance.cast.each {|m| CastUI.instance.add m }
+  CastUI.instance.reload
 end
 @builder.get_object('dice console input').grab_focus
-
-##########################
-# Initialize Game
-Game.instance.load ARGV[0]
-Game.instance.cast.each {|m| CastUI.instance.add m }
-CastUI.instance.reload
-Commands::Console.init(Game.instance)
 
 ##########################
 # Start main loop
