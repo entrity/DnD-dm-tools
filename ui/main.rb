@@ -113,6 +113,7 @@ Thread.new do
   CharacterViewLoader.init(@builder)
   Game.instance.cast.each {|m| CastUI.instance.add m }
   CastUI.instance.reload
+  puts "ui loaded"
 end
 @builder.get_object('dice console input').grab_focus
 

@@ -9,11 +9,16 @@ class EncounterUI < Gtk::ListBox
 
   BUILDER_FILE = File.join XML_DIR, "encounter.ui"
 
+  @@inner_builder = Gtk::Builder.new(file: BUILDER_FILE)
+  @@cast_widget = @@inner_builder.get_object('cast')
+  @@top = nil
+
   def_delegators :'Game.instance', :encounter
 
   def init outer_builder
     @wrapper = outer_builder.get_object('content Box')
     raise KeyError.new 'content Box' if @wrapper.nil?
+    @@inner_builder.connect_signals {|handler| method(handler) }
   end
 
   def add_character character
@@ -24,9 +29,11 @@ class EncounterUI < Gtk::ListBox
   def load_encounter encounter=nil
     Game.instance.encounter = encounter if encounter
     @wrapper.remove @wrapper.child if @wrapper.child
-    @inner_builder ||= Gtk::Builder.new(file: BUILDER_FILE)
-    @wrapper.add @inner_builder.get_object('top')
+    @wrapper.add @@inner_builder.get_object('top')
     reload
+  end
+
+  def on_roll_initiative_clicked widget
   end
 
   def remove_character character
@@ -35,8 +42,17 @@ class EncounterUI < Gtk::ListBox
   end
 
   def reload
-    children.each {|c| @listbox.remove c }
-    encounter.cast.each {|c| @listbox.add ListBoxRow.new c }
+    @@cast_widget.children.each {|c| @@cast_widget.remove c }
+    encounter.cast.sort { |a,b|
+      encounter.initiative_order[a].to_i <=> encounter.initiative_order[b].to_i
+    }.each {|c|
+      order = encounter.initiative_order[c].to_i
+      child = Gtk::Label.new(c.name.presence||c.klass)
+      @@cast_widget.add_child child
+      tab_text = "(#{order}) #{c.name.presence || c.klass}"
+      @@cast_widget.set_tab_label_text child, tab_text
+      child.show
+    }
   end
 
   def set_initiative character, value
@@ -54,6 +70,14 @@ class EncounterUI < Gtk::ListBox
     }
   end
 
+
+  def add_child_widget 
+    @@builder_file ||= File.join XML_DIR, "character_view.ui"
+    Gtk::Builder.new(:file => @@builder_file).tap {|builder|
+      @@widget = builder.get_object 'character view'
+      builder.connect_signals {|handler| self.method(handler) }
+    }
+  end
 end
 
 class EncounterUI::ListBoxRow < CastMemberRow

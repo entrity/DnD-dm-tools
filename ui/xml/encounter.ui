@@ -79,7 +79,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">&lt;i&gt;XP&lt;/i&gt;</property>
+                    <property name="label" translatable="yes">&lt;i&gt;Difficulty&lt;/i&gt;</property>
                     <property name="use_markup">True</property>
                   </object>
                   <packing>
@@ -111,6 +111,24 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">_Roll initiative</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_underline">True</property>
+                <signal name="clicked" handler="on_roll_initiative_clicked" swapped="no"/>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkFlowBoxChild">
+            <property name="width_request">100</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -118,7 +136,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">&lt;i&gt;Difficulty&lt;/i&gt;</property>
+                    <property name="label" translatable="yes">&lt;i&gt;XP&lt;/i&gt;</property>
                     <property name="use_markup">True</property>
                   </object>
                   <packing>
@@ -154,7 +172,7 @@
       <placeholder/>
     </child>
     <child>
-      <object class="GtkNotebook">
+      <object class="GtkNotebook" id="cast">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <child>
