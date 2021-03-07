@@ -1,5 +1,6 @@
-require './lib/ansi'
-require './lib/roll'
+require_relative './ansi'
+require_relative './roll'
+require_relative './game'
 
 module Treasure
 
@@ -182,7 +183,7 @@ module Treasure
 
   # Called only during startup
   def self.load_magic_items_table table_name
-    lines = File.read("data/magic-items-table-#{table_name}.tsv").split("\n")
+    lines = File.read(File.join DATA_DIR, "magic-items-table-#{table_name}.tsv").split("\n")
     lines.reduce([nil] * 100) do |acc, line|
       range, item = line.split(/\s*\t/)
       a, z = range.split('-').map(&:to_i)

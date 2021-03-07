@@ -5,7 +5,7 @@ require 'set'
 class Encounter
   extend Forwardable
 
-  attr_reader :cast
+  attr_reader :cast, :initiative_order
 
   def initialize
     @cast = SortedSet.new

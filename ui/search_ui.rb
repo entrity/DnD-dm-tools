@@ -1,8 +1,10 @@
 require 'gtk3'
 require_relative '../lib/characters'
 require_relative '../lib/character/player_class'
+require_relative '../lib/character/player_class_library'
 require_relative '../lib/monster_library'
 require_relative '../lib/spell_library'
+require_relative './player_class_window'
 require_relative './spell_window'
 
 class SearchUI
@@ -19,7 +21,7 @@ class SearchUI
   def load_autocomplete
     autocomplete_model = Gtk::ListStore.new String, SearchUI::SearchUIRow
     items = []
-    items += Character::PlayerClass.library.map do |s|
+    items += Character::PlayerClassLibrary.instance.list.map do |s|
       SearchUI::PlayerClassRow.new(s)
     end
     items += MonsterLibrary.instance.list.map do |m|
@@ -86,10 +88,11 @@ class SearchUI::PlayerClassRow < SearchUI::SearchUIRow
   def initialize klass
     super()
     @klass = klass
-    @name = klass.name.split(/::/).last
+    @name = klass['name']
   end
 
-  def show
+  def activate
+    PlayerClassWindow.new @klass
   end
 end
 

@@ -15,7 +15,7 @@ class Roll
 
   # Pass in a regex match for something like `2d10k2` or minimally `d20`
   def self.translate_roll regex_match_data
-    n = regex_match_data[1].to_i # How many dice
+    n = [1, regex_match_data[1].to_i].max # How many dice
     d = regex_match_data[2].to_i # How many sides on die
     mode = regex_match_data[4] # Advantage/Disadvantage/Keep
     moded = regex_match_data[5].to_i # How many to Keep

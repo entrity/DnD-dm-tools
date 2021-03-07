@@ -70,7 +70,6 @@ class EncounterUI < Gtk::ListBox
     }
   end
 
-
   def add_child_widget 
     @@builder_file ||= File.join XML_DIR, "character_view.ui"
     Gtk::Builder.new(:file => @@builder_file).tap {|builder|

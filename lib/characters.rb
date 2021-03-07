@@ -17,6 +17,10 @@ class Character
     @attrs = attrs.dup
   end
 
+  def <=> other
+    (name.presence||klass) <=> (other.name.presence||other.klass)
+  end
+
   def cr
     eval "#{challenge_rating}.0"
   end
