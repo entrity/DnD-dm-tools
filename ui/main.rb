@@ -4,8 +4,10 @@ require "gtk3"
 require 'singleton'
 require_relative '../lib/characters'
 require_relative '../lib/game'
+require_relative '../lib/util'
 require_relative './console'
 require_relative './file_io'
+require_relative './menu_handlers'
 require_relative './search_ui'
 # require_relative './autocomplete'
 # require_relative './character_dialog'
@@ -22,6 +24,7 @@ class MainUI
   include Singleton
   include Console::Commands
   include FileIO
+  include MenuHandlers
 
   def initialize
     init_css
@@ -59,6 +62,7 @@ class MainUI
     @builder = Gtk::Builder.new(:file => builder_file)
     @builder.connect_signals {|handler| method(handler) }
     @window = @builder.get_object("window")
+    @window.set_title "D&D"
     # Exit on close window
     @window.signal_connect("destroy") { Gtk.main_quit }
     # cf. https://riptutorial.com/gtk3/example/16426/simple-binding-to-a-widget-s-key-press-event

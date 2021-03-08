@@ -21,38 +21,6 @@ class PlayerClassWindow < SecondaryWindow
 
   private
 
-  def init_signals
-    signal_connect("key-press-event") do |widget, event|
-      if event.keyval == Gdk::Keyval::KEY_Escape
-        close
-      elsif event.keyval == Gdk::Keyval::KEY_Down
-        scroll 30
-      elsif event.keyval == Gdk::Keyval::KEY_Up
-        scroll -30
-      elsif event.keyval == Gdk::Keyval::KEY_Left
-        scroll nil, -30
-      elsif event.keyval == Gdk::Keyval::KEY_Right
-        scroll nil, 30
-      elsif event.state.control_mask?
-        case event.keyval
-        when Gdk::Keyval::KEY_w
-          close
-        end
-      end
-    end
-  end
-
-  def scroll vinc, hinc=nil
-    @scroll_viewport ||= obj('Viewport')
-    if vinc
-      vadj = @scroll_viewport.vadjustment
-      vadj.set_value vadj.value + vinc
-    elsif hinc
-      hadj = @scroll_viewport.hadjustment
-      hadj.set_value hadj.value + hinc
-    end
-  end
-
   def set_class_abilities widget
     value = @klass['desc']
     widget.set_markup([

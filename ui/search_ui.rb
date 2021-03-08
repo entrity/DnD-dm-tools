@@ -4,6 +4,7 @@ require_relative '../lib/character/player_class'
 require_relative '../lib/character/player_class_library'
 require_relative '../lib/monster_library'
 require_relative '../lib/spell_library'
+require_relative './monster_window'
 require_relative './player_class_window'
 require_relative './spell_window'
 
@@ -76,8 +77,8 @@ class SearchUI::MonsterRow < SearchUI::SearchUIRow
   COLOR = '#a8a866'
   EMOJI = "\u{1F47B}"
 
-  def show
-    CharacterViewLoader.content_set Monster.new(@monster)
+  def activate
+    MonsterWindow.new Monster.new @monster
   end
 end
 
