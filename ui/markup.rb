@@ -19,8 +19,7 @@ module Markup
   end
 
   def colored_character character, append_klass=false
-    is_monster = MonsterLibrary.instance.has_key? @character.klass
-    code = is_monster ? '#ddaadd' : '#aaeeaa'
+    code = character.is_a?(Monster) ? '#ddaadd' : '#aaeeaa'
     colored = color code, @character.name
     if @character.name != @character.klass && @character.klass.presence
       "%s (%s)" % [colored, @character.klass]

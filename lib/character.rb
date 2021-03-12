@@ -18,6 +18,7 @@ class Character
 
   def initialize attrs={}
     attrs = MonsterLibrary.instance[attrs] if attrs.is_a? String
+    self.name ||= klass
     @attrs = attrs.dup
   end
 
@@ -28,6 +29,14 @@ class Character
   def cr; eval "#{challenge_rating}.0"; end
 
   def klass; @klass || name; end
+
+  def label
+    if name != klass
+      "%s (%s)" % [name, klass]
+    else
+      name
+    end
+  end
 
   def level; challenge_rating; end
 

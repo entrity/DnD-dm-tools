@@ -4,15 +4,15 @@ require 'set'
 
 class Encounter
   extend Forwardable
+  include Enumerable
 
   attr_reader :cast, :initiative_order
+  def_delegators :cast, :<<, :delete, :each
 
   def initialize
     @cast = SortedSet.new
     @initiative_order = {}
   end
-
-  def add character; @cast.add character; end
 
   # Compute CR based on the XP for this encounter
   def cr; cr_for_xp(xp); end
@@ -22,7 +22,7 @@ class Encounter
     self.class.crs_for_party(@party)[difficulty-1]
   end
 
-  def initiative_for character; @initiative_order[character]; end
+  def initiative_for character; @initiative_order[character].to_i; end
 
   def hoard
     Treasure.hoard cr

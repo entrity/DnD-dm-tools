@@ -18,17 +18,21 @@ class MonsterWindow < SecondaryWindow
     set_detail
     @builder.connect_signals {|handler| method(handler) }
     add_accelerator "<Control>C", 'cast MenuItem'
-    add_accelerator "<Control>E", 'encounter MenuItem'
+    add_accelerator "<Control>Y", 'cast-copy MenuItem'
   end
 
   private
 
   def on_add_to_cast_activated widget
-    CastUI.add @monster
+    CastUI.instance.add @monster
   end
 
   def on_add_to_encounter_activated widget
     raise NotImplementedError.new
+  end
+
+  def on_copy_to_cast_activated widget
+    CastUI.instance.add @monster.dup
   end
 
   def set_detail

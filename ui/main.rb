@@ -5,6 +5,7 @@ require 'singleton'
 require_relative '../lib/characters'
 require_relative '../lib/game'
 require_relative '../lib/util'
+require_relative './cast_ui'
 require_relative './console'
 require_relative './file_io'
 require_relative './menu_handlers'
@@ -12,7 +13,6 @@ require_relative './search_ui'
 # require_relative './autocomplete'
 # require_relative './character_dialog'
 # require_relative './character_view_loader'
-# require_relative './cast_ui'
 # require_relative './encounter_ui'
 
 # include CharacterDialogFunctions
@@ -31,6 +31,8 @@ class MainUI
     init_gui
     @search_ui = SearchUI.new @builder
     @search_ui.entry.grab_focus
+    CastUI.instance.init @builder.get_object 'cast ListBox'
+    EncounterUI.instance.init @builder.get_object 'encounter ListBox'
     puts "MainUI#initialize"
   end
 

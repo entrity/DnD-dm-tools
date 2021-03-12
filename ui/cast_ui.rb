@@ -1,100 +1,100 @@
 require 'gtk3'
-require 'singleton'
-require_relative 'markup'
+require_relative './abstract_character_list_ui'
+require_relative './encounter_ui'
 
-class CastUI
-  include Singleton
+class CastUI < AbstractCharacterListUI
 
-  @@builder = nil
-
-  def self.init builder
-    @@builder = builder
-  end
-
-  def add character
-    game = Game.instance
-    game.cast.push(character) unless game.cast.include?(character)
-    reload
-  end
-
-  def children; widget.children; end
-
-  def reload hard=false
-    hard ? reload_hard : reload_soft
-  end
-
-  def remove character
-    Game.instance.cast.delete character
-    reload
-  end
-
-  def widget; @widget ||= @@builder.get_object('cast ListBox'); end
-
-  private
-
-  def initialize
+  def init widget
+    super widget, Game.instance.cast, CastUI::MemberRow
     widget.set_sort_func {|a,b|
       if a.character.is_pc != b.character.is_pc
         a.character.is_pc ? -1 : 1
       else
-        a.text <=> b.text
+        a.character.label.downcase <=> b.character.label.downcase
       end
     }
+    widget.signal_connect('key-press-event') do |widget, event|
+      if event.keyval == Gdk::Keyval::KEY_u && event.state.control_mask?
+        undelete
+      end
+    end
   end
 
-  def reload_hard
-    children.each {|child| widget.remove(child) }
-    Game.instance.cast.each {|c| widget.add CastMemberRow.new(c) }
-    widget.invalidate_sort
+  def remove character
+    @recycle ||= [] # Storage for deleted characters
+    @recycle << character
+    super
   end
 
-  def reload_soft
-    cast_hash = Game.instance.cast.map {|c| [c, nil] }.to_h
-    children.each do |child|
-      widget.remove(child) unless cast_hash.has_key?(child.character)
-      cast_hash.delete(child.character)
-    end
-    cast_hash.each do |character, _|
-      widget.add CastMemberRow.new(character)
-    end
-    widget.invalidate_sort
+  def undelete
+    character = @recycle.pop
+    add character if character
   end
 end
 
-class CastMemberRow < Gtk::ListBoxRow
-  include Markup
-
-  attr_reader :character, :label
-
+class CastUI::MemberRow < AbstractCharacterRow
   def initialize character
     super()
-    set_visible true
     @character = character
+    set_visible true
+    box = Gtk::Box.new :horizontal
+    box.set_visible true
+    add box
     # Make event box
-    evt_box = Gtk::EventBox.new
-    evt_box.set_visible true
-    add evt_box
+    evt_box = Gtk::EventBox.new.tap do |evt_box|
+      evt_box.set_visible true
+      box.add evt_box
+      evt_box.signal_connect('button-press-event') do |widget|
+        puts "btton press==========="
+      end
+    end
     # Make label
-    @label = Gtk::Label.new.tap do |label|
-      label.set_markup text
+    @name_label = Gtk::Label.new.tap do |label|
+      label.set_markup @character.name
       label.set_xalign 0.0
+      label.set_hexpand true
       label.set_visible true
       label.set_ellipsize Pango::EllipsizeMode::END
       evt_box.add label
     end
+    reset_name_text
+    # Add in-encounter toggle
+    @encounter_toggle = Gtk::ToggleButton.new().tap do |button|
+      button.set_image Gtk::Image.new stock: 'gtk-about'
+      button.set_can_focus false
+      button.set_visible true
+      button.set_border_width 0
+      button.set_tooltip_text 'Ctrl+E'
+      button.signal_connect('toggled') do |widget|
+        if widget.active?
+          EncounterUI.instance.add @character
+        else
+          EncounterUI.instance.remove @character
+        end
+      end
+      box.add button
+    end
+    @cold_storage_button = Gtk::Button.new().tap do |button|
+      button.set_image Gtk::Image.new stock: 'gtk-delete'
+      button.set_can_focus false
+      button.set_visible true
+      button.set_tooltip_text 'Delete'
+      button.signal_connect('clicked') do |widget|
+        CastUI.instance.remove @character
+      end
+      box.add button
+    end
     # Add signals
-    evt_box.signal_connect('button-press-event') do |widget|
-      CharacterViewLoader.content_set character
+    signal_connect('activate') do |widget|
+      puts "activated++++++="
     end
-    signal_connect('focus-in-event') do |widget|
-      CharacterViewLoader.content_set character
-    end
-  end
-
-  def text
-    @text ||= begin
-      ctrl = character.is_pc ? green('P') : red('N')
-      "%s %s" % [ctrl, colored_character(@character, true)]
+    signal_connect('key-press-event') do |widget, event|
+      case event.keyval
+      when Gdk::Keyval::KEY_Delete
+        @cold_storage_button.clicked
+      when Gdk::Keyval::KEY_e
+        @encounter_toggle.clicked
+      end
     end
   end
 end
