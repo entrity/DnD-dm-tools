@@ -3,7 +3,10 @@ require 'singleton'
 require_relative 'markup'
 
 class AbstractCharacterListUI
+  extend Forwardable
   include Singleton
+
+  def_delegators :'Game.instance.encounter', :include?
 
   def init widget, game_members, row_klass
     @widget = widget

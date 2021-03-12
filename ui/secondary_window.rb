@@ -58,6 +58,7 @@ class SecondaryWindow < Gtk::Window
 
   def scroll vinc, hinc=nil
     @scroll_viewport ||= obj('Viewport')
+    return if @scroll_viewport.nil? # Not all secondary windows have an object with this id
     if vinc
       vadj = @scroll_viewport.vadjustment
       vadj.set_value vadj.value + vinc

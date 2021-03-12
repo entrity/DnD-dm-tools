@@ -61,6 +61,7 @@ class CastUI::MemberRow < AbstractCharacterRow
     # Add in-encounter toggle
     @encounter_toggle = Gtk::ToggleButton.new().tap do |button|
       button.set_image Gtk::Image.new stock: 'gtk-about'
+      button.clicked if EncounterUI.instance.include?(@character)
       button.set_can_focus false
       button.set_visible true
       button.set_border_width 0
