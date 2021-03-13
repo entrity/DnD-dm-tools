@@ -11,9 +11,27 @@ class EncounterUI < AbstractCharacterListUI
     }
   end
 
+  def next; prev_next 1; end
+
   def on_initiative_blur row
     Game.instance.encounter.set_initiative row.character, row.initiative_value
     reload
+  end
+
+  def prev; prev_next -1; end
+
+  private
+
+  def prev_next inc
+    selected = @widget.selected_row
+    @widget.move_cursor Gtk::MovementStep::DISPLAY_LINES, inc
+    @widget.activate_cursor_row
+    if selected == @widget.selected_row # Could be none is selected, or the selection was already at the end of the list when the function was called
+      @widget.move_cursor Gtk::MovementStep::BUFFER_ENDS, 0 <=> inc # Go to first/last row
+    end
+    @widget.toggle_cursor_row
+    @widget.activate_cursor_row
+    show_character(@widget.selected_row.character) if @widget.selected_row
   end
 end
 

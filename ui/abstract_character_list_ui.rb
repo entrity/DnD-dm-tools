@@ -37,6 +37,11 @@ class AbstractCharacterListUI
     reload
   end
 
+  # Load central pane with CharacterView
+  def show_character character
+    # todo
+  end
+
   private
 
   def initialize

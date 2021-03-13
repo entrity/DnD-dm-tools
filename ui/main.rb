@@ -79,6 +79,10 @@ class MainUI
           @gtk_main_loop.quit
         when Gdk::Keyval::KEY_space # Toggle console
           toggle_console_visibility
+        when Gdk::Keyval::KEY_Left
+          EncounterUI.instance.prev
+        when Gdk::Keyval::KEY_Right
+          EncounterUI.instance.next
         when Gdk::Keyval::KEY_1
         when Gdk::Keyval::KEY_2
         end
