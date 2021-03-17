@@ -45,7 +45,7 @@ class CastUI::MemberRow < AbstractCharacterRow
       evt_box.set_visible true
       box.add evt_box
       evt_box.signal_connect('button-press-event') do |widget|
-        puts "btton press==========="
+        MainUI.instance.set_content CharacterView.new @character
       end
     end
     # Make label
@@ -87,7 +87,7 @@ class CastUI::MemberRow < AbstractCharacterRow
     end
     # Add signals
     signal_connect('activate') do |widget|
-      puts "activated++++++="
+      MainUI.instance.set_content CharacterView.new @character
     end
     signal_connect('key-press-event') do |widget, event|
       case event.keyval

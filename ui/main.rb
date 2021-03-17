@@ -44,6 +44,12 @@ class MainUI
     end
   end
 
+  def set_content child_widget
+    @content_wiget ||= @builder.get_object('content Box')
+    @content_wiget.children.each {|c| @content_wiget.remove c }
+    @content_wiget.add child_widget, expand: true
+  end
+
   private
 
   # Get CSS
