@@ -4,9 +4,9 @@ require_relative '../lib/character/player_class'
 require_relative '../lib/character/player_class_library'
 require_relative '../lib/monster_library'
 require_relative '../lib/spell_library'
-require_relative './monster_window'
-require_relative './player_class_window'
-require_relative './spell_window'
+require_relative './character_view'
+require_relative './player_class_view'
+require_relative './spell_view'
 
 class SearchUI
   attr_reader :entry
@@ -62,7 +62,7 @@ class SearchUI::SearchUIRow
   attr_reader :name
   attr_reader :sort_key
 
-  def show
+  def activate
     raise NotImplementedError.new
   end
 end
@@ -78,7 +78,7 @@ class SearchUI::MonsterRow < SearchUI::SearchUIRow
   EMOJI = "\u{1F47B}"
 
   def activate
-    MonsterWindow.new Monster.new @monster
+    SecondaryWindow.new CharacterView.new Monster.new @monster
   end
 end
 
@@ -93,7 +93,7 @@ class SearchUI::PlayerClassRow < SearchUI::SearchUIRow
   end
 
   def activate
-    PlayerClassWindow.new @klass
+    SecondaryWindow.new PlayerClassView.new @klass
   end
 end
 
@@ -105,7 +105,7 @@ class SearchUI::SpellRow < SearchUI::SearchUIRow
   end
 
   def activate
-    SpellWindow.new @spell
+    SecondaryWindow.new SpellView.new @spell
   end
 
   COLOR = '#a8a866'

@@ -1,17 +1,36 @@
 # An abstract class for displaying info on Spells, Player Classes, Foe Classes, etc.
+require 'forwardable'
+require_relative 'builder_view'
 
 class SecondaryWindow < Gtk::Window
+  extend Forwardable
 
-  def initialize dict
+  def_delegators :@view, :dict, :obj, :scroll
+
+  def initialize view
     super()
-    @dict = dict
-    @builder = Gtk::Builder.new(file: self.class::BUILDER_FILE)
-    add @builder.get_object('top')
+    @view = view
+    raise RuntimeError.new("Bad class for view #{@view.class}") unless @view.is_a?(BuilderView)
+    set_child view
     init_signals
     set_titlebar
     set_default_width 600
     set_height_request 600
     set_visible true
+    signal_connect("key-press-event") do |widget, event|
+      if event.state.control_mask?
+        case event.keyval
+        when Gdk::Keyval::KEY_equal # (+)
+          @font_size ||= 20
+          @font_size += 2
+          override_font Pango::FontDescription.new "#{@font_size}px"
+        when Gdk::Keyval::KEY_minus
+          @font_size ||= 20
+          @font_size -= 2
+          override_font Pango::FontDescription.new "#{@font_size}px"
+        end
+      end
+    end
   end
 
   private
@@ -20,10 +39,6 @@ class SecondaryWindow < Gtk::Window
   def add_accelerator accel_string, menu_item
     key, mod = Gtk.accelerator_parse(accel_string)
     obj(menu_item).add_accelerator("activate", @accel_group, key, mod, Gtk::AccelFlags::VISIBLE)
-  end
-
-  def gray text
-    '<span color="#aaaaaa">%s</span>' % text
   end
 
   def init_signals
@@ -45,32 +60,6 @@ class SecondaryWindow < Gtk::Window
         end
       end
     end
-  end
-
-  def keyval_markup key, label=nil
-    label ||= key.capitalize
-    '%s %s' % [gray(label), @dict[key]]
-  end
-
-  def obj id
-    @builder.get_object(id)
-  end
-
-  def scroll vinc, hinc=nil
-    @scroll_viewport ||= obj('Viewport')
-    return if @scroll_viewport.nil? # Not all secondary windows have an object with this id
-    if vinc
-      vadj = @scroll_viewport.vadjustment
-      vadj.set_value vadj.value + vinc
-    end
-    if hinc
-      hadj = @scroll_viewport.hadjustment
-      hadj.set_value hadj.value + hinc
-    end
-  end
-
-  def set id, markup
-    obj(id).set_markup markup
   end
 
   def set_titlebar

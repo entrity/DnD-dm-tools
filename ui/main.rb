@@ -11,8 +11,6 @@ require_relative './file_io'
 require_relative './menu_handlers'
 require_relative './search_ui'
 # require_relative './autocomplete'
-# require_relative './character_dialog'
-# require_relative './character_view_loader'
 # require_relative './encounter_ui'
 
 # include CharacterDialogFunctions
@@ -65,6 +63,7 @@ class MainUI
     @builder.connect_signals {|handler| method(handler) }
     @window = @builder.get_object("window")
     @window.set_title "D&D"
+    @window.override_font Pango::FontDescription.new "20px"
     # Exit on close window
     @window.signal_connect("destroy") { Gtk.main_quit }
     # cf. https://riptutorial.com/gtk3/example/16426/simple-binding-to-a-widget-s-key-press-event
@@ -83,6 +82,14 @@ class MainUI
           EncounterUI.instance.prev
         when Gdk::Keyval::KEY_Right
           EncounterUI.instance.next
+        when Gdk::Keyval::KEY_equal # (+)
+          @font_size ||= 18
+          @font_size += 2
+          @window.override_font Pango::FontDescription.new "#{@font_size}px"
+        when Gdk::Keyval::KEY_minus
+          @font_size ||= 18
+          @font_size -= 2
+          @window.override_font Pango::FontDescription.new "#{@font_size}px"
         when Gdk::Keyval::KEY_1
         when Gdk::Keyval::KEY_2
         end

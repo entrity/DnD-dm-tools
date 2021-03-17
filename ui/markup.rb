@@ -2,20 +2,14 @@ require 'gtk3'
 
 module Markup
 
-  # private
-
-
-  # def attr *keys
-  #   text = @character.dig *keys.map(&:to_s)
-  #   return if text.nil? || text.respond_to?(:empty?) && text.empty?
-  #   modifier = ((text.to_i - 10) / 2).floor
-  #   "#{text} (#{bold modifier})"
-  # end
-
   private
 
+  def big text
+    markedup :big, text
+  end
+
   def bold text
-    %Q{<b>#{text}</b>}
+    markedup :b, text
   end
 
   def colored_character character, append_klass=false
@@ -29,7 +23,7 @@ module Markup
   end
 
   def color val, text
-    %Q{<span foreground="#{val}">#{text}</span>}
+    markedup :span, text, foreground: val
   end
 
   def colored_hp
@@ -41,6 +35,21 @@ module Markup
     else
       green hp
     end
+  end
+
+  def markedup tag, content, attributes={}
+    attr_str = attributes.map {|k,v| %Q{#{k}="#{v}"} }.join ' '
+    %Q{<#{tag} #{attr_str}>#{content}</#{tag}>}
+  end
+
+  def signed val
+    return nil if val.nil?
+    prefix = val >= 0 ? '+' : ''
+    prefix + val.to_s
+  end
+
+  def underline text
+    markedup :u, text
   end
 
   def gray text; color 'gray', text; end

@@ -7,7 +7,7 @@ class Encounter
   include Enumerable
 
   attr_reader :cast, :initiative_order
-  def_delegators :cast, :<<, :delete, :each
+  def_delegators :cast, :<<, :delete, :each, :includes?
 
   def initialize
     @cast = SortedSet.new

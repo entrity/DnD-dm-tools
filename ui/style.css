@@ -3,9 +3,6 @@ https://developer.gnome.org/gtk3/stable/chap-css-overview.html
 https://stackoverflow.com/questions/61597913/how-to-add-css-to-a-theme-gtk
 */
 
-label {
-	font: 18px "Comic Sans";
-}
 button {
 	padding-left: 0px;
 	padding-right: 0px;
