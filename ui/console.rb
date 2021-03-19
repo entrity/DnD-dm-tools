@@ -2,9 +2,10 @@ require_relative '../lib/roll'
 require_relative './autocomplete'  
 
 class Console
+  @@dict = {}
+
   # Type should be :command or :console
   def self.create input_widget, output_widget
-    @@dict ||= {}
     raise KeyError.new("Duplicate key") if @@dict.has_key? input_widget.name
     @@dict[input_widget.name] = self.new(input_widget, output_widget)
   end
@@ -24,25 +25,24 @@ class Console
     @history_cursor += inc
     @history_cursor = 0 if @history_cursor > 0
     return if @history_cursor == 0 || @history_cursor < history.length*-1
-    text = history[@history_cursor]
-    @input.buffer.set_text text, text.length
+    if text = history[@history_cursor]
+      @input.buffer.set_text text, text.length
+    end
   end
 
   def run_command
+    @history_cursor = 0
     cmd = @input.text.strip
-    history.push(cmd) unless history.last == cmd
+    history.delete cmd
+    history.push cmd
     @input.set_text ''
-    @output.buffer.insert_at_cursor "%s\n" % cmd
+    append %Q{<span color="#aaa">%s</span>} % cmd unless cmd.strip.empty?
     begin
-      output = evaluate cmd
-      @output.buffer.insert_at_cursor "=> #{output.inspect}\n"
+      append evaluate(cmd)
     rescue => ex
       puts ex.backtrace, ex.inspect
-      @output.buffer.insert_at_cursor "#{ex.inspect}\n"
+      append "#{ex.inspect}"
     end
-    @output.scroll_to_iter @output.buffer.end_iter, 0.0, true, 0.5, 0.5
-    vadj = @scroller.vadjustment
-    vadj.set_value vadj.upper
   end
 
   private
@@ -50,12 +50,36 @@ class Console
   def initialize input_widget, output_widget
     @input = input_widget
     @output = output_widget
-    @scroller = @output.parent.parent
+    @scroller = @output.parent
+    # Auto-scroll to bottom
+    @output.buffer.signal_connect("changed") {
+      mark = @output.buffer.create_mark nil, @output.buffer.start_iter.forward_to_end, false
+      @output.scroll_mark_onscreen mark
+    }
     MyAutocomplete.add @input
   end
 
+  def append markup
+    @output.buffer.insert_markup @output.buffer.end_iter, "\n#{markup}", -1
+  end
+
   def evaluate cmd
-    Game.instance.send :eval, cmd
+    if cmd == 'ls'
+      params = [
+        "METHODS", (Game.instance.public_methods-Object.methods).join(' '),
+        "LOCALS", Game.instance.send(:local_variables).join(' '),
+        "VARIABLES", Game.instance.instance_variables.join(' '),
+      ]
+      <<~EOF.strip % params
+      <span font_family="monospace"><span color="#cc0">%-10s</span>> %s
+      <span color="#cc0">%-10s</span>> %s
+      <span color="#cc0">%-10s</span>> %s</span>
+      EOF
+    else
+      output = Game.instance.send :eval, cmd
+      markup = output.inspect.gsub /</, '&lt;'
+      "=> %s" % markup
+    end
   end
 
   def history
@@ -66,7 +90,9 @@ end
 class DiceConsole < Console
   def evaluate cmd
     updated_command = Roll.translate_command(cmd)
-    @output.buffer.insert_at_cursor "#{updated_command}\n"
+    if updated_command.strip != cmd.strip
+      append updated_command
+    end
     super updated_command
   end
 end

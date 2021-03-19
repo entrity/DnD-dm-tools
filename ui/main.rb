@@ -7,16 +7,14 @@ require_relative '../lib/game'
 require_relative '../lib/util'
 require_relative './cast_ui'
 require_relative './console'
+require_relative './encounter_methods'
 require_relative './file_io'
 require_relative './menu_handlers'
 require_relative './search_ui'
 # require_relative './autocomplete'
 # require_relative './encounter_ui'
 
-# include CharacterDialogFunctions
-# include CharacterView
 # include Commands
-# include EncounterUI::Functions
 
 class MainUI
   include Singleton
@@ -31,7 +29,18 @@ class MainUI
     @search_ui.entry.grab_focus
     CastUI.instance.init @builder.get_object 'cast ListBox'
     EncounterUI.instance.init @builder.get_object 'encounter ListBox'
+    invalidate_encounter_summary
     puts "MainUI#initialize"
+  end
+
+  def invalidate_encounter_summary
+    encounter = Game.instance.encounter
+    @encounter_summary ||= @builder.get_object('encounter Label')
+    @encounter_summary.set_markup <<~EOF
+      Encounter
+      XP #{encounter.xp.to_i} / CR #{encounter.cr}
+      EASY #{encounter.cr_for_party Encounter::EASY} / MED #{encounter.cr_for_party Encounter::MEDIUM} / HARD #{encounter.cr_for_party Encounter::HARD} / DEADLY #{encounter.cr_for_party Encounter::DEADLY}
+    EOF
   end
 
   def run
@@ -70,6 +79,7 @@ class MainUI
     @window = @builder.get_object("window")
     @window.set_title "D&D"
     @window.override_font Pango::FontDescription.new "20px"
+    @dice_console = DiceConsole.create @builder.get_object('dice console input'), @builder.get_object('dice console output')
     # Exit on close window
     @window.signal_connect("destroy") { Gtk.main_quit }
     # cf. https://riptutorial.com/gtk3/example/16426/simple-binding-to-a-widget-s-key-press-event
@@ -77,7 +87,7 @@ class MainUI
       if event.state.control_mask?
         case event.keyval
         when Gdk::Keyval::KEY_k # Command input
-          # @dice_console.input.grab_focus
+          @dice_console.input.grab_focus
         when Gdk::Keyval::KEY_f # Search
           @search_ui.entry.grab_focus
         when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
@@ -103,8 +113,20 @@ class MainUI
     end
   end
 
-  def toggle_visible *args
-    set_reveal_child !reveal_child?
+  def on_terrain_changed trigger
+    # require 'pry'; binding.pry
+    # puts trigger.active_text
+    if iter = trigger.active_iter
+      $stderr.puts trigger.model.get_value(iter, 0).inspect
+    end
+  end
+
+  def toggle_visible trigger
+    case trigger.label
+    when 'Encounter'
+      target = @builder.get_object('encounter Box')
+    end
+    target.set_visible !target.visible?
   end
 end
 

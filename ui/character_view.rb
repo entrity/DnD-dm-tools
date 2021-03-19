@@ -69,9 +69,14 @@ class CharacterView < BuilderView
   end
 
   def set_name
+    if @character.is_a?(Monster)
+      lvl_txt = " (cr %d | xp %d)" % [level, Encounter.xp_for_cr(@character.level)]
+    elsif level
+      lvl_txt = " (lvl %d)" % [level]
+    end
     markup = <<~EOF
       <big><a href="https://open5e.com/monsters/#{@dict['slug']}">#{name}</a></big>
-      <small> (#{level}) #{klass} </small>
+      <small>#{lvl_txt} #{klass} </small>
     EOF
     set 'name Label', markup.gsub(/\n/, '')
   end

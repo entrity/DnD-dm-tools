@@ -1,6 +1,6 @@
-# require './lib/monster_library'
 require 'forwardable'
 require 'set'
+require_relative 'table'
 
 class Encounter
   extend Forwardable
@@ -19,13 +19,31 @@ class Encounter
 
   # Compute CR for party+difficulty (DMG p.275). Returns float
   def cr_for_party difficulty
-    self.class.crs_for_party(@party)[difficulty-1]
+    crs_for_party[difficulty-1]
+  end
+
+  # Returns Array of CR string values for party for all difficulties
+  def crs_for_party
+    difficulties = [EASY, MEDIUM, HARD, DEADLY]
+    difficulties.map do |difficulty|
+      # Compute party's XP threshold for given difficulty
+      xp_threshold = pcs.sum {|pc| Table['xp-thresholds-by-character-level.tsv'][pc.level.to_i-1][difficulty-1].to_i }
+      self.class.cr_for_xp(xp_threshold)
+    end
   end
 
   def initiative_for character; @initiative_order[character].to_i; end
 
   def hoard
     Treasure.hoard cr
+  end
+
+  def pcs
+    cast.select {|c| c.is_pc }
+  end
+
+  def npcs
+    cast.select {|c| !c.is_pc }
   end
 
   def remove character; @cast.delete character; end
@@ -38,19 +56,8 @@ class Encounter
 
   # XP earned from encounter
   def xp
-    xp_sum = @npcs.sum {|c| xp_for_cr[c.cr] }
-    xp_sum * xp_multiplier(@npcs&.length.to_i)
-  end
-
-  # Returns Array of CR string values for party for all difficulties
-  def self.crs_for_party party
-    pcs = party.values
-    difficulties = [EASY, MEDIUM, HARD, DEADLY]
-    difficulties.map do |difficulty|
-      # Compute party's XP threshold for given difficulty
-      xp_threshold = pcs.sum {|pc| Table['xp-thresholds-by-character-level.tsv'][pc.level-1][difficulty-1].to_i }
-      cr_for_xp(xp_threshold)
-    end
+    xp_sum = npcs.sum {|c| xp_for_cr[c.cr] }
+    xp_sum * xp_multiplier(npcs&.length.to_i)
   end
 
   # Find nearest XP match in table, return corresponding CR
@@ -91,8 +98,9 @@ class Encounter
   end
 
   # Return Hash of {XP => CR}
-  def self.xp_for_cr
+  def self.xp_for_cr cr=nil
     @@xp_by_cr ||= Table['xp-by-cr.tsv'].map {|k,v| [eval("#{k}.0"), v.to_i] }.to_h
+    cr ? @@xp_by_cr[cr.to_f] : @@xp_by_cr
   end
   def_delegator self, :xp_for_cr
 

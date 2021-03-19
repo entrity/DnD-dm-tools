@@ -1,5 +1,6 @@
 require 'gtk3'
 require_relative './abstract_character_list_ui'
+require_relative './encounter_view'
 
 class EncounterUI < AbstractCharacterListUI
 
@@ -59,7 +60,7 @@ class EncounterUI::MemberRow < AbstractCharacterRow
       evt_box.set_visible true
       box.add evt_box
       evt_box.signal_connect('button-press-event') do |widget|
-        puts "btton press==========="
+        MainUI.instance.set_content EncounterView.new(@character)
       end
     end
     # Make label
@@ -85,7 +86,7 @@ class EncounterUI::MemberRow < AbstractCharacterRow
     end
     # Add signals
     signal_connect('activate') do |widget|
-      puts "activated++++++="
+      MainUI.instance.set_content EncounterView.new(@character)
     end
     signal_connect('key-press-event') do |widget, event|
       case event.keyval
