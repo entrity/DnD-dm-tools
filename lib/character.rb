@@ -28,6 +28,10 @@ class Character
 
   def cr; eval "#{challenge_rating}.0"; end
 
+  def inspect
+    %Q{<#{klass}:#{object_id} #{name} hp="#{hp}" lv="#{level}">}
+  end
+
   def klass; @klass || name; end
 
   def label
@@ -39,6 +43,8 @@ class Character
   end
 
   def level; challenge_rating; end
+
+  def level= val; self.challenge_rating = val; end
 
   # Compute modifier for an attribute score
   def mod attribute_score

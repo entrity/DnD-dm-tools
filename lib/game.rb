@@ -10,8 +10,8 @@ class Game
   extend Forwardable
   include Singleton
 
-  attr_reader    :cast, :console_histories, :encounters, :notes, :terrain
-  attr_accessor  :encounter, :fpath
+  attr_reader    :cast, :console_histories, :encounter, :notes, :terrain
+  attr_accessor  :fpath
 
   def initialize fpath=nil
     @cast ||= [] # PCs and NPCs
@@ -38,5 +38,13 @@ class Game
       File.binwrite fpath, Marshal.dump(attrs)
       puts "Saved to #{fpath}"
     end
+  end
+
+  def pc name
+    @cast.find {|c| c.name.to_s.downcase.strip == name.to_s.downcase.strip }
+  end
+
+  def npcs
+    @cast.select {|c| !c.is_pc }
   end
 end
