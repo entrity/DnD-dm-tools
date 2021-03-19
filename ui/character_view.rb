@@ -17,6 +17,7 @@ class CharacterView < BuilderView
     super character.attrs
     @character = character
     set_name
+    set_hp
     set_stats
     set_detail
     add_section 'Speed', @character.speed, delimiter: " "
@@ -68,15 +69,21 @@ class CharacterView < BuilderView
     obj('detail Label').set_markup(markup)
   end
 
+  def set_hp
+    set 'hp Label', "HP #{colored_hp}" if @character.hp
+  end
+
   def set_name
     if @character.is_a?(Monster)
       lvl_txt = " (cr %d | xp %d)" % [level, Encounter.xp_for_cr(@character.level)]
     elsif level
       lvl_txt = " (lvl %d)" % [level]
     end
+    klass_txt = klass if klass != name
+    small_txt = [lvl_txt, klass_txt].compact.join(" ")
     markup = <<~EOF
       <big><a href="https://open5e.com/monsters/#{@dict['slug']}">#{name}</a></big>
-      <small>#{lvl_txt} #{klass} </small>
+      <small> #{small_txt}</small>
     EOF
     set 'name Label', markup.gsub(/\n/, '')
   end
