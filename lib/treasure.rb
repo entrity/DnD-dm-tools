@@ -17,32 +17,32 @@ module Treasure
     case cr
     when 0..4
       case d100
-      when 1..30;   puts "#{roll '5d6'} CP"
-      when 31..60;  puts "#{roll '4d6'} SP"
-      when 61..70;  puts "#{roll '3d6'} EP"
-      when 71..95;  puts "#{roll '3d6'} GP"
-      when 96..100; puts "#{roll '1d6'} PP"
+      when 1..30;   "#{roll '5d6'} CP"
+      when 31..60;  "#{roll '4d6'} SP"
+      when 61..70;  "#{roll '3d6'} EP"
+      when 71..95;  "#{roll '3d6'} GP"
+      when 96..100; "#{roll '1d6'} PP"
       end
     when 5..10
       case d100
-      when 1..30;   puts "#{roll '4d6 * 100'} CP #{roll '1d6 * 10'} EP"
-      when 31..60;  puts "#{roll '6d6 * 10'} SP #{roll '2d6 * 10'} GP"
-      when 61..70;  puts "#{roll '3d6 * 10'} EP #{roll '2d6 * 10'} GP"
-      when 71..95;  puts "#{roll '4d6 * 10'} GP"
-      when 96..100; puts "#{roll '2d6 * 10'} GP #{roll '3d6'} PP"
+      when 1..30;   "#{roll '4d6 * 100'} CP #{roll '1d6 * 10'} EP"
+      when 31..60;  "#{roll '6d6 * 10'} SP #{roll '2d6 * 10'} GP"
+      when 61..70;  "#{roll '3d6 * 10'} EP #{roll '2d6 * 10'} GP"
+      when 71..95;  "#{roll '4d6 * 10'} GP"
+      when 96..100; "#{roll '2d6 * 10'} GP #{roll '3d6'} PP"
       end
     when 11..16
       case d100
-      when 1..20;   puts "#{roll '4d6 * 100'} SP #{roll '1d6 * 100'} EP"
-      when 21..35;  puts "#{roll '1d6 * 100'} EP #{roll '1d6 * 100'} GP"
-      when 36..75;  puts "#{roll '2d6 * 100'} GP #{roll '1d6 * 10'} PP"
-      when 76..100;  puts "#{roll '2d6 * 100'} GP #{roll '2d6 * 10'} PP"
+      when 1..20;   "#{roll '4d6 * 100'} SP #{roll '1d6 * 100'} EP"
+      when 21..35;  "#{roll '1d6 * 100'} EP #{roll '1d6 * 100'} GP"
+      when 36..75;  "#{roll '2d6 * 100'} GP #{roll '1d6 * 10'} PP"
+      when 76..100; "#{roll '2d6 * 100'} GP #{roll '2d6 * 10'} PP"
       end
     else
       case d100
-      when 1..15;   puts "#{roll '2d6 * 1000'} EP #{roll '8d6 * 100'} GP"
-      when 16..55;  puts "#{roll '1d6 * 1000'} GP #{roll '1d6 * 100'} PP"
-      when 56..100;  puts "#{roll '1d6 * 1000'} GP #{roll '2d6 * 100'} PP"
+      when 1..15;   "#{roll '2d6 * 1000'} EP #{roll '8d6 * 100'} GP"
+      when 16..55;  "#{roll '1d6 * 1000'} GP #{roll '1d6 * 100'} PP"
+      when 56..100; "#{roll '1d6 * 1000'} GP #{roll '2d6 * 100'} PP"
       end
     end
   end
