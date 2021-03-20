@@ -5,6 +5,7 @@ require_relative './encounter_ui'
 class CastUI < AbstractCharacterListUI
 
   def init widget
+    Game.instance.cast.compact!
     super widget, Game.instance.cast, CastUI::MemberRow
     widget.set_sort_func {|a,b|
       if a.character.is_pc != b.character.is_pc
@@ -45,7 +46,7 @@ class CastUI::MemberRow < AbstractCharacterRow
       evt_box.set_visible true
       box.add evt_box
       evt_box.signal_connect('button-press-event') do |widget|
-        MainUI.instance.set_content CharacterView.new @character
+        MainUI.instance.set_character @character
       end
     end
     # Make label
@@ -87,7 +88,7 @@ class CastUI::MemberRow < AbstractCharacterRow
     end
     # Add signals
     signal_connect('activate') do |widget|
-      MainUI.instance.set_content CharacterView.new @character
+      MainUI.instance.set_character @character
     end
     signal_connect('key-press-event') do |widget, event|
       case event.keyval

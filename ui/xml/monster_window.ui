@@ -61,6 +61,15 @@
                         <accelerator key="y" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Add Copy _to Encounter</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_copy_to_encounter_activated" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

@@ -22,6 +22,8 @@ class MainUI
   include FileIO
   include MenuHandlers
 
+  attr_reader :character
+
   def initialize
     init_css
     init_gui
@@ -51,6 +53,11 @@ class MainUI
     ensure
       Game.instance.dump 'autosave.sav'
     end
+  end
+
+  def set_character character
+    @character = character
+    set_content CharacterView.new character
   end
 
   def set_content child_widget
@@ -137,36 +144,10 @@ MainUI.instance.run
 
 =begin
 
-def load_latest_encounter
-  EncounterUI.instance.load_encounter
-end
-
-def toggle_console_visibility
-  console = @builder.get_object 'console'
-  method(:toggle_visible).unbind.bind(console).call
-  @cmd_console.input.grab_focus if console.reveal_child?
-end
-
-##########################
-
 @cmd_console = Commands::Console.create @builder.get_object('console input'), @builder.get_object('console output')
 @dice_console = Commands::DiceConsole.create @builder.get_object('dice console input'), @builder.get_object('dice console output')
 
 ##########################
 # Initialize Game
 Commands::Console.init(Game.instance)
-
-##########################
-# Initialize UIs
-Thread.new do
-  CastUI.init(@builder)
-  EncounterUI.instance.init(@builder)
-  CharacterViewLoader.init(@builder)
-  Game.instance.cast.each {|m| CastUI.instance.add m }
-  CastUI.instance.reload
-  puts "ui loaded"
-end
-@builder.get_object('dice console input').grab_focus
-
-##########################
 =end

@@ -12,6 +12,11 @@ class EncounterUI < AbstractCharacterListUI
     }
   end
 
+  def add character
+    super
+    MainUI.instance.invalidate_encounter_summary
+  end
+
   def next; prev_next 1; end
 
   def on_initiative_blur row
@@ -20,6 +25,11 @@ class EncounterUI < AbstractCharacterListUI
   end
 
   def prev; prev_next -1; end
+
+  def remove character
+    super
+    MainUI.instance.invalidate_encounter_summary
+  end
 
   private
 
@@ -33,6 +43,10 @@ class EncounterUI < AbstractCharacterListUI
     @widget.toggle_cursor_row
     @widget.activate_cursor_row
     show_character(@widget.selected_row.character) if @widget.selected_row
+  end
+
+  def show_character character
+    MainUI.instance.set_character character
   end
 end
 
@@ -60,7 +74,7 @@ class EncounterUI::MemberRow < AbstractCharacterRow
       evt_box.set_visible true
       box.add evt_box
       evt_box.signal_connect('button-press-event') do |widget|
-        MainUI.instance.set_content CharacterView.new(@character)
+        MainUI.instance.set_character(@character)
       end
     end
     # Make label
@@ -86,7 +100,7 @@ class EncounterUI::MemberRow < AbstractCharacterRow
     end
     # Add signals
     signal_connect('activate') do |widget|
-      MainUI.instance.set_content CharacterView.new(@character)
+      MainUI.instance.set_character(@character)
     end
     signal_connect('key-press-event') do |widget, event|
       case event.keyval

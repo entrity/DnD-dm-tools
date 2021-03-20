@@ -28,19 +28,24 @@ class CharacterView < BuilderView
     add_section 'Spells', @character.spell_list
   end
 
-  private
 
   def on_add_to_cast_activated widget
     CastUI.instance.add @character
   end
 
   def on_add_to_encounter_activated widget
-    raise NotImplementedError.new
+    EncounterUI.instance.add @character
   end
 
   def on_copy_to_cast_activated widget
     CastUI.instance.add @character.dup
   end
+
+  def on_copy_to_encounter_activated widget
+    EncounterUI.instance.add @character.dup
+  end
+
+  private
 
   def saving_throws_markup
     [
@@ -75,7 +80,7 @@ class CharacterView < BuilderView
 
   def set_name
     if @character.is_a?(Monster)
-      lvl_txt = " (cr %d | xp %d)" % [level, Encounter.xp_for_cr(@character.level)]
+      lvl_txt = " (cr %s | xp %d)" % [level, Encounter.xp_for_cr(@character.level)]
     elsif level
       lvl_txt = " (lvl %d)" % [level]
     end

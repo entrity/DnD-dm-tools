@@ -8,6 +8,7 @@ class BuilderView < Gtk::Box
     super :vertical
     @dict = dict
     @builder = Gtk::Builder.new(file: self.class::BUILDER_FILE)
+    @builder.connect_signals {|handler| method(handler) }
     @viewport = obj('Viewport')
     add obj('top'), expand: true
     set_visible true

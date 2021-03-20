@@ -85,15 +85,41 @@ class Console
   def history
     Game.instance.console_histories[@input.name] ||= []
   end
+
 end
 
 class DiceConsole < Console
   def evaluate cmd
     updated_command = Roll.translate_command(cmd)
+    updated_command = replace_characters_in_command(cmd)
     if updated_command.strip != cmd.strip
       append updated_command
     end
     super updated_command
+  end
+
+  private
+
+  def replace_characters_in_command cmd
+    name2char = {}
+    char2char = {}
+    Game.instance.cast.each_with_index {|c,i|
+      name2char[c.name.to_s.strip.downcase] = "cast[#{i}]"
+      char2char[c] = "cast[#{i}]"
+    }
+    tokens = cmd.scan(/\w+|\W+/)
+    tokens.map { |tok|
+      # Reference character by name (slug)
+      if replacement = name2char[tok.strip.downcase]
+        replacement
+      # Reference MainUI's current character by 'cc'
+      elsif tok == 'cc'
+        char2char[MainUI.instance.character] || tok
+      # Return token
+      else
+        tok
+      end
+    }.join('')
   end
 end
 
