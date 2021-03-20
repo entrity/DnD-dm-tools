@@ -16,7 +16,7 @@ class AbstractCharacterListUI
   end
 
   def add character
-    unless @members[character]
+    unless character.nil? || @members[character]
       @game_members << character
       @members[character] = true
       reload

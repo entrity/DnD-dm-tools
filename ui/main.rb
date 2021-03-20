@@ -11,7 +11,6 @@ require_relative './encounter_methods'
 require_relative './file_io'
 require_relative './menu_handlers'
 require_relative './search_ui'
-# require_relative './autocomplete'
 # require_relative './encounter_ui'
 
 # include Commands

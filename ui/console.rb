@@ -4,7 +4,6 @@ require_relative './autocomplete'
 class Console
   @@dict = {}
 
-  # Type should be :command or :console
   def self.create input_widget, output_widget
     raise KeyError.new("Duplicate key") if @@dict.has_key? input_widget.name
     @@dict[input_widget.name] = self.new(input_widget, output_widget)
@@ -27,6 +26,7 @@ class Console
     return if @history_cursor == 0 || @history_cursor < history.length*-1
     if text = history[@history_cursor]
       @input.buffer.set_text text, text.length
+      @input.set_position -1
     end
   end
 
@@ -56,7 +56,8 @@ class Console
       mark = @output.buffer.create_mark nil, @output.buffer.start_iter.forward_to_end, false
       @output.scroll_mark_onscreen mark
     }
-    MyAutocomplete.add @input
+    # Autocomplete
+    @input.signal_connect("focus-in-event") { refresh_autocomplete }
   end
 
   def append markup
@@ -89,9 +90,10 @@ class Console
 end
 
 class DiceConsole < Console
+
   def evaluate cmd
     updated_command = Roll.translate_command(cmd)
-    updated_command = replace_characters_in_command(cmd)
+    updated_command = replace_characters_in_command(updated_command)
     if updated_command.strip != cmd.strip
       append updated_command
     end
@@ -99,6 +101,15 @@ class DiceConsole < Console
   end
 
   private
+
+  def refresh_autocomplete
+    values = []
+    values += Game.instance.public_methods - Object.methods
+    values += Game.instance.send(:local_variables)
+    values += Game.instance.instance_variables
+    values += Game.instance.cast.map{|c| c.name&.downcase }.compact.uniq
+    @autocomplete = MyAutocomplete.new(@input, values)
+  end
 
   def replace_characters_in_command cmd
     name2char = {}
@@ -132,10 +143,8 @@ module Console::Commands
     case event.keyval
     when Gdk::Keyval::KEY_Up
       Console.for_input_widget(widget).history_visit(-1)
-      return true
     when Gdk::Keyval::KEY_Down
       Console.for_input_widget(widget).history_visit(1)
-      return true
     end
   end
 end
