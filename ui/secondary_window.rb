@@ -17,6 +17,7 @@ class SecondaryWindow < Gtk::Window
     set_default_width 600
     set_height_request 600
     set_visible true
+    override_font Pango::FontDescription.new "20px"
     signal_connect("key-press-event") do |widget, event|
       if event.state.control_mask?
         case event.keyval
