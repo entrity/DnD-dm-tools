@@ -41,8 +41,13 @@ class SearchUI
     completion.set_minimum_key_length 0
     completion.set_text_column 0
     completion.set_inline_completion true
+    completion.set_inline_selection true
     completion.set_model autocomplete_model
     completion.set_match_func { |*args| match_func *args }
+    completion.signal_connect('cursor-on-match') { |completion, model, iter|
+      row = model.get_value iter, 1
+      row.show_in_main
+    }
     completion.signal_connect("match-selected") do |completion, treemodel, treeiter|
       obj = treemodel.get_value(treeiter, 1)
       obj.activate
@@ -63,6 +68,16 @@ class SearchUI::SearchUIRow
   attr_reader :sort_key
 
   def activate
+    SecondaryWindow.new view
+  end
+
+  def show_in_main
+    MainUI.instance.set_content view
+  end
+
+  private
+
+  def view
     raise NotImplementedError.new
   end
 end
@@ -77,8 +92,8 @@ class SearchUI::MonsterRow < SearchUI::SearchUIRow
   COLOR = '#a8a866'
   EMOJI = "\u{1F47B}"
 
-  def activate
-    SecondaryWindow.new CharacterView.new Monster.new @monster
+  def view
+    CharacterView.new Monster.new @monster
   end
 end
 
@@ -92,8 +107,8 @@ class SearchUI::PlayerClassRow < SearchUI::SearchUIRow
     @name = klass['name']
   end
 
-  def activate
-    SecondaryWindow.new PlayerClassView.new @klass
+  def view
+    PlayerClassView.new @klass
   end
 end
 
@@ -104,8 +119,8 @@ class SearchUI::SpellRow < SearchUI::SearchUIRow
     @name = spell['name']
   end
 
-  def activate
-    SecondaryWindow.new SpellView.new @spell
+  def view
+    SpellView.new @spell
   end
 
   COLOR = '#a8a866'
