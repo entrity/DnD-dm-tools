@@ -1,6 +1,5 @@
 require 'gtk3'
 require_relative './abstract_character_list_ui'
-require_relative './encounter_view'
 
 class EncounterUI < AbstractCharacterListUI
 
@@ -87,6 +86,18 @@ class EncounterUI::MemberRow < AbstractCharacterRow
       evt_box.add label
     end
     reset_name_text
+    # Add Remove-to-cast button
+    @to_cast_button = Gtk::Button.new.tap do |button|
+      button.set_image Gtk::Image.new stock: 'gtk-go-up'
+      button.set_can_focus false
+      button.set_visible true
+      button.set_tooltip_text 'Move to "cast only"'
+      button.signal_connect('clicked') do |widget|
+        EncounterUI.instance.remove @character
+        CastUI.instance.add @character
+      end
+      box.add button
+    end
     # Add Remove button
     @remove_button = Gtk::Button.new.tap do |button|
       button.set_image Gtk::Image.new stock: 'gtk-delete'

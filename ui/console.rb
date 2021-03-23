@@ -19,6 +19,10 @@ class Console
 
   attr_reader :input
 
+  def append markup
+    @output.buffer.insert_markup @output.buffer.end_iter, "\n#{markup}", -1
+  end
+
   def history_visit inc
     @history_cursor ||= 0
     @history_cursor += inc
@@ -58,10 +62,6 @@ class Console
     }
     # Autocomplete
     @input.signal_connect("focus-in-event") { refresh_autocomplete }
-  end
-
-  def append markup
-    @output.buffer.insert_markup @output.buffer.end_iter, "\n#{markup}", -1
   end
 
   def evaluate cmd
