@@ -12,6 +12,11 @@ class AbstractCharacterListUI
     @widget = widget
     @game_members = game_members
     @row_klass = row_klass
+    # Override add to troubleshoot if there's a bad add
+    @widget.define_singleton_method(:add) {|child|
+      require 'pry'; binding.pry unless child.is_a?(row_klass)
+      super child
+    }
     reload
   end
 
