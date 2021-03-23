@@ -63,7 +63,7 @@ class Roll
     [color_string, white_string]
   end
 
-    def roll_dice n, d
+  def roll_dice n, d
     rolls = (0...[n,1].max).map do
       value = 1 + rand(d)
       color = d == 20 ? COLORS.fetch(value, 33) : 0

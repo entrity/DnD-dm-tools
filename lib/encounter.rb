@@ -122,16 +122,16 @@ class Encounter
   HARD = 3
   DEADLY = 4
   # Terrain
-  MOUNTAIN = "Mountain"
-  UNDERDARK = "Underdark"
   ARCTIC = "Arctic"
+  COASTAL = "Coastal"
+  DESERT = "Desert"
   FOREST = "Forest"
-  JUNGLE = "Jungle"
   GRASSLAND = "Grassland"
   HILL = "Hill"
-  URBAN = "Urban"
-  DESERT = "Desert"
-  UNDERWATER = "Underwater"
+  JUNGLE = "Jungle"
+  MOUNTAIN = "Mountain"
   SWAMP = "Swamp"
-  COASTAL = "Coastal"
+  UNDERDARK = "Underdark"
+  UNDERWATER = "Underwater"
+  URBAN = "Urban"
 end
