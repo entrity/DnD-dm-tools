@@ -110,9 +110,11 @@ class MainUI
         when Gdk::Keyval::KEY_space # Toggle console
           toggle_console_visibility
         when Gdk::Keyval::KEY_Left
-          EncounterUI.instance.prev
+          EncounterUI.instance.prev unless widget.focus == @dice_console.input
+          false # Allow event to propagate
         when Gdk::Keyval::KEY_Right
-          EncounterUI.instance.next
+          EncounterUI.instance.next unless widget.focus == @dice_console.input
+          false # Allow event to propagate
         when Gdk::Keyval::KEY_equal # (+)
           @font_size ||= 18
           @font_size += 2

@@ -4,6 +4,8 @@ require_relative './autocomplete'
 class Console
   @@dict = {}
 
+  attr_reader :input
+
   def self.create input_widget, output_widget
     raise KeyError.new("Duplicate key") if @@dict.has_key? input_widget.name
     @@dict[input_widget.name] = self.new(input_widget, output_widget)
@@ -86,7 +88,6 @@ class Console
   def history
     Game.instance.console_histories[@input.name] ||= []
   end
-
 end
 
 class DiceConsole < Console

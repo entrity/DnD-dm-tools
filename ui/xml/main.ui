@@ -135,142 +135,6 @@
               <object class="GtkMenuItem">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Terrain</property>
-                <property name="use_underline">True</property>
-                <child type="submenu">
-                  <object class="GtkMenu">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <child>
-                      <object class="GtkMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Any</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparatorMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Arctic</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Coastal</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Desert</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Forest</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Grassland</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Hill</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Jungle</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Mountain</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Swamp</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Underdark</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Underwater</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkCheckMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Urban</property>
-                        <property name="use_underline">True</property>
-                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuItem">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Roll</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -404,6 +268,164 @@
                             <property name="can_focus">False</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Initiative Next (Ctrl+Right)</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Initiative Prev (Ctrl+Left)</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Terrain</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Any</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Arctic</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Coastal</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Desert</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Forest</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Grassland</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Hill</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Jungle</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Mountain</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Swamp</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Underdark</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Underwater</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Urban</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="toggle_terrain" swapped="no"/>
                       </object>
                     </child>
                   </object>
