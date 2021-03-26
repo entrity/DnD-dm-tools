@@ -20,10 +20,14 @@ module MenuHandlers
   end
 
   def roll_inn_event
-    raise NotImplementedError.new
+    puts case rand(12)
+    when 1..2; yellow Table['inn-events.tsv'].roll
+    else; green "Peaceful night"
+    end
   end
 
   def roll_rumour
+    Table['rumours.tsv'].roll
   end
 
   def roll_travel_event
