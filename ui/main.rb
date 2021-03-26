@@ -6,14 +6,12 @@ require_relative '../lib/characters'
 require_relative '../lib/game'
 require_relative '../lib/util'
 require_relative './cast_ui'
+require_relative './encounter_ui'
+require_relative './encounters_ui'
 require_relative './console'
-require_relative './encounter_methods'
 require_relative './file_io'
 require_relative './menu_handlers'
 require_relative './search_ui'
-# require_relative './encounter_ui'
-
-# include Commands
 
 class MainUI
   include Singleton
@@ -30,8 +28,9 @@ class MainUI
     @search_ui.entry.grab_focus
     CastUI.instance.init @builder.get_object 'cast ListBox'
     EncounterUI.instance.init @builder.get_object 'encounter ListBox'
+    EncountersUI.instance.init @builder.get_object 'encounters ListBox'
     invalidate_encounter_summary
-    puts "MainUI#initialize"
+    $stdout.puts "MainUI#initialize"
   end
 
   def invalidate_encounter_summary
@@ -42,6 +41,15 @@ class MainUI
       XP #{encounter.xp.to_i} / CR #{encounter.cr}
       EASY #{encounter.cr_for_party Encounter::EASY} / MED #{encounter.cr_for_party Encounter::MEDIUM} / HARD #{encounter.cr_for_party Encounter::HARD} / DEADLY #{encounter.cr_for_party Encounter::DEADLY}
     EOF
+  end
+
+  def new_encounter
+    enc = Encounter.new Game.instance.cast.select(&:is_pc)
+    EncountersUI.instance.load enc
+  end
+
+  def puts *args
+    @dice_console.append *args
   end
 
   def run
@@ -86,6 +94,7 @@ class MainUI
     @window.set_title "D&D"
     @window.override_font Pango::FontDescription.new "20px"
     @dice_console = DiceConsole.create @builder.get_object('dice console input'), @builder.get_object('dice console output')
+    @encounters_list = @builder.get_object('encounters-list Menu')
     # Exit on close window
     @window.signal_connect("destroy") { Gtk.main_quit }
     # cf. https://riptutorial.com/gtk3/example/16426/simple-binding-to-a-widget-s-key-press-event
@@ -120,17 +129,22 @@ class MainUI
   end
 
   def on_terrain_changed trigger
-    # require 'pry'; binding.pry
-    # puts trigger.active_text
     if iter = trigger.active_iter
       $stderr.puts trigger.model.get_value(iter, 0).inspect
+    end
+  end
+
+  def toggle_cast_v_encounters trigger
+    case trigger.label
+    when '_Cast'; @builder.get_object('cast Box').set_visible(trigger.active?)
+    else; @builder.get_object('encounters Box').set_visible(trigger.active?)
     end
   end
 
   def toggle_visible trigger
     case trigger.label
     when 'Encounter'
-      target = @builder.get_object('encounter Box')
+      target = @builder.get_object('encounter-summary Box')
     end
     target.set_visible !target.visible?
   end
@@ -138,15 +152,3 @@ end
 
 Game.instance.load ARGV[0]
 MainUI.instance.run
-
-##########################
-
-=begin
-
-@cmd_console = Commands::Console.create @builder.get_object('console input'), @builder.get_object('console output')
-@dice_console = Commands::DiceConsole.create @builder.get_object('dice console input'), @builder.get_object('dice console output')
-
-##########################
-# Initialize Game
-Commands::Console.init(Game.instance)
-=end

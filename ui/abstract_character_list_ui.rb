@@ -22,7 +22,7 @@ class AbstractCharacterListUI
 
   def add character
     unless character.nil? || @members[character]
-      @game_members << character
+      game_members << character
       @members[character] = true
       reload
     end
@@ -32,12 +32,12 @@ class AbstractCharacterListUI
 
   def reload
     children.each {|child| @widget.remove(child) }
-    @game_members.each {|c| @widget.add @row_klass.new(c) }
+    game_members.each {|c| @widget.add @row_klass.new(c) }
     @widget.invalidate_sort
   end
 
   def remove character
-    @game_members.delete character
+    game_members.delete character
     @members.delete character
     reload
   end
@@ -51,6 +51,10 @@ class AbstractCharacterListUI
 
   def initialize
     @members = {} # A dict mapping character to `true`
+  end
+
+  def game_members
+    @game_members.is_a?(Proc) ? @game_members.call : @game_members
   end
 end
 

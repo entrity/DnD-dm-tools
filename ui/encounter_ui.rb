@@ -4,7 +4,7 @@ require_relative './abstract_character_list_ui'
 class EncounterUI < AbstractCharacterListUI
 
   def init widget
-    super widget, Game.instance.encounter, EncounterUI::MemberRow
+    super widget, ->(){ Game.instance.encounter }, EncounterUI::MemberRow
     widget.set_sort_func {|a,b|
       init_a, init_b = [a,b].map {|w| Game.instance.encounter.initiative_for w.character }
       init_b <=> init_a
@@ -14,6 +14,7 @@ class EncounterUI < AbstractCharacterListUI
   def add character
     super
     MainUI.instance.invalidate_encounter_summary
+    EncountersUI.instance.update_name Game.instance.encounter
   end
 
   def next; prev_next 1; end
@@ -28,6 +29,7 @@ class EncounterUI < AbstractCharacterListUI
   def remove character
     super
     MainUI.instance.invalidate_encounter_summary
+    EncountersUI.instance.update_name Game.instance.encounter
   end
 
   private

@@ -10,13 +10,14 @@ class Game
   extend Forwardable
   include Singleton
 
-  attr_reader    :cast, :console_histories, :encounter, :notes, :terrain
-  attr_accessor  :fpath
+  attr_reader    :cast, :console_histories, :encounters, :notes, :terrain
+  attr_accessor  :encounter, :fpath
 
   def initialize fpath=nil
     @cast ||= [] # PCs and NPCs
     @console_histories ||= {} # History of console commands
     @encounter ||= Encounter.new # Current encounter
+    @encounters = []
     @fpath ||= fpath
     @notes ||= []
     @terrain ||= nil
