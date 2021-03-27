@@ -1,5 +1,6 @@
 require_relative '../lib/roll'
 require_relative './autocomplete'  
+require_relative './util/string_ops'
 
 class Console
   @@dict = {}
@@ -63,7 +64,8 @@ class Console
       @output.scroll_mark_onscreen mark
     }
     # Autocomplete
-    @input.signal_connect("focus-in-event") { refresh_autocomplete }
+    @input.signal_connect("focus-in-event") { refresh_autocomplete true }
+    @input.signal_connect("changed") { refresh_autocomplete }
   end
 
   def evaluate cmd
@@ -103,13 +105,29 @@ class DiceConsole < Console
 
   private
 
-  def refresh_autocomplete
-    values = []
-    values += Game.instance.public_methods - Object.methods
-    values += Game.instance.send(:local_variables)
-    values += Game.instance.instance_variables
-    values += Game.instance.cast.map{|c| c.name&.downcase }.compact.uniq
+  def adjacent_token_chain
+    word = StringOps.word_up_to_cursor @input
+    matched = word&.match(/(.+)\.\w*$/)
+    matched && matched[1].presence
+  end
+
+  def refresh_autocomplete force=false
+    chain = adjacent_token_chain
+    return unless force || chain != @prev_chain
+    # $stderr.puts "chain changed #{@prev_chain.inspect} #{chain.inspect} : #{force}"
+    @prev_chain = chain
+    if chain.nil? || chain.empty?
+      values = []
+      values += Game.instance.public_methods - Object.methods
+      values += Game.instance.send(:local_variables)
+      values += Game.instance.instance_variables
+      values += Game.instance.cast.map{|c| c.name&.downcase }.compact.uniq
+    else
+      values = Game.instance.send(:eval, "#{chain}.public_methods rescue []") - Object.methods
+    end
+    # $stderr.puts "values #{values&.map(&:to_s)&.sort.inspect}"
     @autocomplete = MyAutocomplete.new(@input, values)
+    true
   end
 
   def replace_characters_in_command cmd

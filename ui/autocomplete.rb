@@ -1,4 +1,5 @@
 require "gtk3"
+require_relative './util/string_ops'
 
 class MyAutocomplete
   def initialize entry, values
@@ -15,26 +16,18 @@ class MyAutocomplete
   end
 
   def match_func(entry_completion, entry_value, list_obj)
-    _, current_token, _ = split
     obj_text = list_obj.get_value(0)
-    return current_token&.length > 0 && obj_text.start_with?(current_token)
+    current_token_prefix = StringOps.token_up_to_cursor @entry
+    return current_token_prefix && obj_text.start_with?(current_token_prefix)
   end
 
   def match_selected entry_completion, list_store, iter, user_data=nil
     selection = list_store.get_value iter, entry_completion.text_column
-    pre, _, post = split
-    entry_completion.entry.set_text [pre, selection, post].join
-    entry_completion.entry.set_position [pre, selection].join.length
+    pre, _, post = StringOps.split3 @entry.text, @entry.position
+    entry_completion.entry.tap { |entry|
+      entry.set_text [pre, selection, post].join
+      entry.set_position [pre, selection].join.length
+    }
     return true # Prevent default signal callback
-  end
-
-  private
-
-  def split
-    text = @entry.text
-    pre = text[0...@entry.position].match(/(.*?)(\W+)?(\w+)?$/).captures
-    post = text[@entry.position..-1].match(/(\w+)?(\W+)?(.*)$/).captures
-    token = [pre.pop, post.shift].join
-    return pre.join, token, post.join
   end
 end
