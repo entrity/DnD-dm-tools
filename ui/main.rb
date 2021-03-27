@@ -137,11 +137,27 @@ class MainUI
         end
       end
     end
+    init_terrain_menu
+  end
+
+  def init_terrain_menu
+    menu = @builder.get_object('terrain Menu')
+    menu.submenu.children.each {|parent_item|
+      key = parent_item.label.capitalize
+      next if key.empty? # Separator MenuItem
+      parent_menu = Gtk::Menu.new
+      parent_item.set_submenu parent_menu
+      MonsterLibrary.instance.environments[key]&.each { |item|
+        menu_item = Gtk::MenuItem.new(label: "%3s %s" % [item.challenge_rating, item.name])
+        menu_item.set_visible true
+        parent_menu.add menu_item
+      }
+      parent_menu.set_visible true
+    }
   end
 
   def on_terrain_changed trigger
     if iter = trigger.active_iter
-      $stderr.puts trigger.model.get_value(iter, 0).inspect
     end
   end
 

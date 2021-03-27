@@ -1,17 +1,22 @@
 #!/usr/bin/ruby
 
+require 'forwardable'
 require 'json'
 require 'set'
 require 'singleton'
 require_relative './constants'
 
 class MonsterLibrary
+  extend Forwardable
   include Singleton
+
+  attr_accessor :environments
+  def_delegators :@open5e_array, :length
 
   def initialize
     @open5e_array = []
     load_monsters
-    # load_environments
+    load_environments
   end
 
   def [] name_or_idx
@@ -27,6 +32,8 @@ class MonsterLibrary
   end
 
   def has_key? key; @open5e_hash.has_key? key; end
+
+  def inspect; "<MonsterLibrary:#{object_id} @length=#{length}>"; end
 
   def list; @open5e_array; end
 
@@ -48,7 +55,7 @@ class MonsterLibrary
   def sample opts={}
     if terrain = opts[:terrain]
       selection = @environments[terrain]
-      selection += @environments['any'] unless opts[:strict]
+      selection += @environments['Any'] unless opts[:strict]
     else
       selection = @open5e_array.dup
     end
@@ -73,19 +80,15 @@ class MonsterLibrary
   def load_environments
     # Apply environment data from https://donjon.bin.sh/5e/monsters/
     donjon_monsters = JSON.parse(File.read File.join DATA_DIR, 'donjon.bin-monsters.json')
-    @environments = {'any' => Set.new}
+    @environments = { 'Any' => SortedSet.new }
     @open5e_hash.each do |name, monster|
-      if donjon_data = donjon_monsters[name]
-        if environment_hash = donjon_data['environment']
-          environment_hash.keys.each do |key|
-            @environments[key] ||= Set.new
-            @environments[key] << monster
-          end
-        else
-          @environments['any'] << monster
-        end
+      if environment_hash = donjon_monsters.dig(name, 'environment')
+        environment_hash.keys.each { |key|
+          @environments[key] ||= SortedSet.new
+          @environments[key] << monster
+        }
       else
-        @environments['any'] << monster
+        @environments['Any'] << monster
       end
     end
   end
@@ -94,8 +97,19 @@ class MonsterLibrary
     # Get monsters from https://api.open5e.com/ files
     @open5e_array = Dir[File.join DATA_DIR, 'open5e-monsters*'].reduce([]) do |acc, fpath|
       results = JSON.parse(File.read fpath)['results']
-      acc + results
+      acc + results.map {|h| Item.new(h) }
     end
     @open5e_hash = @open5e_array.map {|m| [m['name'], m]}.to_h
+  end
+
+  class Item < OpenStruct
+    def <=> other
+      compare_crs = cr_float <=> other.cr_float
+      compare_crs.zero? ? self['slug'] <=> other['slug'] : compare_crs
+    end
+
+    def cr_float
+      eval "%s.0" % self['challenge_rating']
+    end
   end
 end
