@@ -10,6 +10,7 @@ require_relative './encounter_ui'
 require_relative './encounters_ui'
 require_relative './console'
 require_relative './file_io'
+require_relative './markup'
 require_relative './menu_handlers'
 require_relative './search_ui'
 
@@ -17,6 +18,7 @@ class MainUI
   include Singleton
   include Console::Commands
   include FileIO
+  include Markup
   include MenuHandlers
 
   attr_reader :character
@@ -35,11 +37,18 @@ class MainUI
 
   def invalidate_encounter_summary
     encounter = Game.instance.encounter
+    difficulty = encounter.difficulty
     @encounter_summary ||= @builder.get_object('encounter Label')
+    difficulties = [['EASY'], ['MED', 'MEDIUM'], ['HARD'], ['DEADLY']].map {|arr|
+      dlvl = Encounter.const_get(arr.last)
+      cr = encounter.cr_for_party(dlvl)
+      cr = dlvl == difficulty ? colored_difficulty(difficulty, cr) : cr
+      "#{arr.first} #{cr}"
+    }.join(' / ')
     @encounter_summary.set_markup <<~EOF
       Encounter
-      XP #{encounter.xp.to_i} / CR #{encounter.cr}
-      EASY #{encounter.cr_for_party Encounter::EASY} / MED #{encounter.cr_for_party Encounter::MEDIUM} / HARD #{encounter.cr_for_party Encounter::HARD} / DEADLY #{encounter.cr_for_party Encounter::DEADLY}
+      XP #{encounter.xp.to_i} / CR #{colored_difficulty difficulty, encounter.cr}
+      #{difficulties}
     EOF
   end
 

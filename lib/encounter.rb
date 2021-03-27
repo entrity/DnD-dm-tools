@@ -32,6 +32,22 @@ class Encounter
     end
   end
 
+  def difficulty
+    rounded_cr = cr.round
+    easy, med, hard, deadly = crs_for_party
+    if rounded_cr < med
+      EASY
+    elsif rounded_cr == med
+      MEDIUM
+    elsif rounded_cr == hard
+      HARD
+    elsif rounded_cr > hard
+      DEADLY
+    else
+      raise ArgumentError.new("Unrecognized cr: #{rounded_cr} : #{crs_for_party.inspect}")
+    end
+  end
+
   def initiative_for character; @initiative_order[character].to_i; end
 
   def hoard

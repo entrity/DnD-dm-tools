@@ -26,6 +26,14 @@ module Markup
     markedup :span, text, foreground: val
   end
 
+  def colored_difficulty difficulty, text
+    case difficulty
+    when Encounter::EASY; green(text)
+    when Encounter::DEADLY; red(text)
+    else; yellow(text)
+    end
+  end
+
   def colored_hp
     hp = @character.hp.to_i
     if hp <= 0
