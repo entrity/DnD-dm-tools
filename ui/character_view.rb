@@ -75,7 +75,11 @@ class CharacterView < BuilderView
   end
 
   def set_hp
-    set 'hp Label', "HP #{colored_hp}" if @character.hp
+    markup = []
+    markup << "HP #{colored_hp}" if @character.hp
+    markup << "AC #{@character.armor_class}" if @character.armor_class
+    markup = markup.compact.join(' / ')
+    set 'hp Label', markup unless markup.empty?
   end
 
   def set_name

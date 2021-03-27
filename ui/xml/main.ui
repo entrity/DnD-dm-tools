@@ -725,67 +725,6 @@
                           <object class="GtkFlowBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <child>
-                              <object class="GtkFlowBoxChild">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkComboBoxText" id="encounter-terrain">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="has_entry">True</property>
-                                    <items>
-                                      <item translatable="yes">(ANY)</item>
-                                      <item translatable="yes">Arctic</item>
-                                      <item translatable="yes">Coastal</item>
-                                      <item translatable="yes">Desert</item>
-                                      <item translatable="yes">Forest</item>
-                                      <item translatable="yes">Grassland</item>
-                                      <item translatable="yes">Hill</item>
-                                      <item translatable="yes">Jungle</item>
-                                      <item translatable="yes">Mountain</item>
-                                      <item translatable="yes">Swamp</item>
-                                      <item translatable="yes">Underdark</item>
-                                      <item translatable="yes">Underwater</item>
-                                      <item translatable="yes">Urban</item>
-                                    </items>
-                                    <signal name="changed" handler="on_terrain_changed" swapped="no"/>
-                                    <child internal-child="entry">
-                                      <object class="GtkEntry">
-                                        <property name="can_focus">False</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkFlowBoxChild">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkComboBox">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <child>
-                                      <object class="GtkCellRendererText" id="(any)">
-                                        <property name="markup">(any)</property>
-                                        <property name="width_chars">6</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkCellRendererToggle" id="Coastal">
-                                        <property name="cell_background_gdk">#c1c17d7d1111</property>
-                                        <property name="width">91</property>
-                                        <property name="height">27</property>
-                                        <property name="active">True</property>
-                                        <property name="indicator_size">12</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
