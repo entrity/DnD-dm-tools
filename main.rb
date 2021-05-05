@@ -1,22 +1,21 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 require 'json'
+require 'optparse'
+require 'pry'
 require './lib/game'
+require './ui/main'
 
-if __FILE__ == $PROGRAM_NAME
-  fpath = ARGV[0] || 'test'
-  if fpath.nil?
-    $stderr.puts "fpath required"
-    exit 1
-  end
-  if File.exists?(fpath)
-    # FileUtils.cp fpath, "#{fpath}.bak"
-    $game = Marshal.load File.read fpath
-    # $game.party.each do |pc_name, pc|
-    #   define_method(pc_name) { pc }
-    # end
-  else
-    $game = Game.new fpath
-  end
-  $game.start
+opts = {}
+OptionParser.new do |o|
+  o.banner = "Usage: cmd [-c] <savfile>"
+  o.on('-c', '--cli', "No gui") { opts[:cli] = true }
+end.parse!
+
+Game.instance.load ARGV[0]
+
+if opts[:cli]
+  binding.pry Game.instance
+else
+  MainUI.instance.run
 end

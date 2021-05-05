@@ -176,6 +176,3 @@ class MainUI
     target.set_visible !target.visible?
   end
 end
-
-Game.instance.load ARGV[0]
-MainUI.instance.run
