@@ -61,6 +61,15 @@ class MainUI
     @dice_console.append *args
   end
 
+  def refresh
+    @search_ui.entry.grab_focus
+    CastUI.instance.init @builder.get_object 'cast ListBox'
+    EncounterUI.instance.init @builder.get_object 'encounter ListBox'
+    EncountersUI.instance.init @builder.get_object 'encounters ListBox'
+    invalidate_encounter_summary
+    $stdout.puts "MainUI#refresh"
+  end
+
   def run
     # Start main loop
     @gtk_main_loop = GLib::MainLoop.new

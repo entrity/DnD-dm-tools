@@ -40,6 +40,7 @@
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="load_dialog" swapped="no"/>
+                        <accelerator key="o" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -49,14 +50,15 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="save_dialog" swapped="no"/>
+                        <signal name="activate" handler="save" swapped="no"/>
+                        <accelerator key="s" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkRadioMenuItem" id="file-save-as">
+                      <object class="GtkMenuItem" id="file-save-as">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">gtk-save-as</property>
+                        <property name="label" translatable="yes">Save _As</property>
                         <property name="use_underline">True</property>
                       </object>
                     </child>
@@ -193,7 +195,7 @@
                       <object class="GtkMenuItem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">_Trinkets</property>
+                        <property name="label" translatable="yes">Trin_kets</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="roll_trinket" swapped="no"/>
                       </object>
@@ -792,7 +794,7 @@
                         <property name="name">dice console</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="placeholder_text" translatable="yes">command...</property>
+                        <property name="placeholder_text" translatable="yes">command... (Ctrl+k)</property>
                         <signal name="activate" handler="run_console_command" swapped="no"/>
                         <signal name="key-press-event" handler="on_console_key_pressed" swapped="no"/>
                       </object>
