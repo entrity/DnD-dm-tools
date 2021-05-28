@@ -81,6 +81,7 @@ class Console
       <span color="#cc0">%-10s</span>> %s</span>
       EOF
     else
+      Game.instance.char = MainUI.instance.character
       output = Game.instance.send :eval, cmd
       markup = output.inspect.gsub /</, '&lt;'
       "=> %s" % markup

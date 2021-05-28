@@ -109,8 +109,9 @@ class MainUI
     @builder = Gtk::Builder.new(:file => builder_file)
     @builder.connect_signals {|handler| method(handler) }
     @window = @builder.get_object("window")
-    @window.set_title "D&D"
+    @window.set_title "D&D DM"
     @window.override_font Pango::FontDescription.new "20px"
+    @window.titlebar.set_show_close_button true
     @dice_console = DiceConsole.create @builder.get_object('dice console input'), @builder.get_object('dice console output')
     @encounters_list = @builder.get_object('encounters-list Menu')
     # Exit on close window

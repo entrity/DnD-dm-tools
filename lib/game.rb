@@ -11,7 +11,7 @@ class Game
   include Singleton
 
   attr_reader    :cast, :console_histories, :encounters, :notes, :terrain
-  attr_accessor  :encounter, :fpath
+  attr_accessor  :char, :encounter, :fpath
 
   def initialize fpath=nil
     @cast ||= [] # PCs and NPCs
