@@ -44,6 +44,25 @@ module MenuHandlers
     end
   end
 
+  def roll_treasure trigger_widget
+    label = trigger_widget.label
+    if matched = trigger_widget.label.match(/\d+/)
+      if label =~ /Hoard/
+        bounty = Treasure.hoard matched[0].to_i
+      elsif label =~ /Individual/
+        bounty = Treasure.individual matched[0].to_i
+      end
+      puts gray("Treasure:")
+      puts yellow("cp %d" % bounty.cp) if bounty.cp
+      puts yellow("sp %d" % bounty.sp) if bounty.sp
+      puts yellow("ep %d" % bounty.ep) if bounty.ep
+      puts yellow("gp %d" % bounty.gp) if bounty.gp
+      puts yellow("pp %d" % bounty.pp) if bounty.pp
+      puts orange(bounty.items) if bounty.items
+      puts purple(bounty.magic_items) if bounty.magic_items
+    end
+  end
+
   def roll_trinket
     trinket = Table['trinkets.tsv'].roll[1]
     puts "%s %s" % [gray('Trinket'), yellow(trinket)]

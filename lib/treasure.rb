@@ -14,46 +14,48 @@ module Treasure
 
   def self.individual cr
     d100 = 1 + rand(100)
+    bounty = Bounty.new
     case cr
     when 0..4
       case d100
-      when 1..30;   "#{roll '5d6'} CP"
-      when 31..60;  "#{roll '4d6'} SP"
-      when 61..70;  "#{roll '3d6'} EP"
-      when 71..95;  "#{roll '3d6'} GP"
-      when 96..100; "#{roll '1d6'} PP"
+      when 1..30;   bounty.set_coin cp: roll('5d6')
+      when 31..60;  bounty.set_coin sp: roll('4d6')
+      when 61..70;  bounty.set_coin ep: roll('3d6')
+      when 71..95;  bounty.set_coin gp: roll('3d6')
+      when 96..100; bounty.set_coin pp: roll('1d6')
       end
     when 5..10
       case d100
-      when 1..30;   "#{roll '4d6 * 100'} CP #{roll '1d6 * 10'} EP"
-      when 31..60;  "#{roll '6d6 * 10'} SP #{roll '2d6 * 10'} GP"
-      when 61..70;  "#{roll '3d6 * 10'} EP #{roll '2d6 * 10'} GP"
-      when 71..95;  "#{roll '4d6 * 10'} GP"
-      when 96..100; "#{roll '2d6 * 10'} GP #{roll '3d6'} PP"
+      when 1..30;   bounty.set_coin cp: roll('4d6 * 100') #{roll '1d6 * 10') EP"
+      when 31..60;  bounty.set_coin sp: roll('6d6 * 10') #{roll '2d6 * 10') GP"
+      when 61..70;  bounty.set_coin ep: roll('3d6 * 10') #{roll '2d6 * 10') GP"
+      when 71..95;  bounty.set_coin gp: roll('4d6 * 10')
+      when 96..100; bounty.set_coin gp: roll('2d6 * 10'), pp: roll('3d6')
       end
     when 11..16
       case d100
-      when 1..20;   "#{roll '4d6 * 100'} SP #{roll '1d6 * 100'} EP"
-      when 21..35;  "#{roll '1d6 * 100'} EP #{roll '1d6 * 100'} GP"
-      when 36..75;  "#{roll '2d6 * 100'} GP #{roll '1d6 * 10'} PP"
-      when 76..100; "#{roll '2d6 * 100'} GP #{roll '2d6 * 10'} PP"
+      when 1..20;   bounty.set_coin sp: roll('4d6 * 100') #{roll '1d6 * 100') EP"
+      when 21..35;  bounty.set_coin ep: roll('1d6 * 100') #{roll '1d6 * 100') GP"
+      when 36..75;  bounty.set_coin gp: roll('2d6 * 100') #{roll '1d6 * 10') PP"
+      when 76..100; bounty.set_coin gp: roll('2d6 * 100') #{roll '2d6 * 10'} PP"
       end
     else
       case d100
-      when 1..15;   "#{roll '2d6 * 1000'} EP #{roll '8d6 * 100'} GP"
-      when 16..55;  "#{roll '1d6 * 1000'} GP #{roll '1d6 * 100'} PP"
-      when 56..100; "#{roll '1d6 * 1000'} GP #{roll '2d6 * 100'} PP"
+      when 1..15;   bounty.set_coin ep: roll('2d6 * 1000') #{roll '8d6 * 100'} GP"
+      when 16..55;  bounty.set_coin gp: roll('1d6 * 1000') #{roll '1d6 * 100'} PP"
+      when 56..100; bounty.set_coin gp: roll('1d6 * 1000') #{roll '2d6 * 100'} PP"
       end
     end
+    bounty
   end
 
   def self.hoard cr
     d100 = 1 + rand(100)
-    treasure =
+    bounty = Bounty.new
     if cr < 5
-      puts [roll('6d6*100'), 'CP', roll('3d6*100'), 'SP', roll('2d6*10'), 'GP'].join ' '
-      case d100
-      when 1..6;   ['no gems', 'no items']
+      bounty.set_coin cp: roll('6d6*100'), sp: roll('3d6*100'), gp: roll('2d6*10')
+      bounty.set_items case d100
+      when 1..6;   []
       when 7..16;  [roll('2d6'), '10 gp gems']
       when 17..26; [roll('2d4'), '25 gp art objects']
       when 27..36; [roll('2d6'), '50 gp gems']
@@ -72,8 +74,8 @@ module Treasure
       when 100;    [roll('2d6'), '50 gp gems', magic_items('g')]
       end
     elsif cr < 11
-      puts [roll('2d6*100'), 'CP', roll('2d6*1000'), 'SP', roll('6d6*100'), 'GP', roll('3d6*10'), 'PP'].join ' '
-      if d100 <= 4    ; []
+      bounty.set_coin cp: roll('2d6*100'), sp: roll('2d6*1000'), gp: roll('6d6*100'), pp: roll('3d6*10')
+      items = if d100 <= 4; []
       elsif d100 <= 10; [roll('2d4'), '25  gp art objects']
       elsif d100 <= 16; [roll('3d6'), '50  gp gems']
       elsif d100 <= 22; [roll('3d6'), '100 gp gems']
@@ -103,9 +105,10 @@ module Treasure
       elsif d100 <= 99; [roll('3d6'), '100 gp gems', magic_items('h', '1')]
       else            ; [roll('2d4'), '250 gp art objects', magic_items('h', '1')]
       end
+      bounty.set_items items
     elsif cr < 17
-      puts [roll('4d6*1000'), 'GP', roll('5d6*100'), 'PP'].join ' '
-      if d100 <= 3;     []
+      bounty.set_coin gp: roll('4d6*1000'), pp: roll('5d6*100')
+      items = if d100 <= 3; []
       elsif d100 <= 6;  [roll('2d4'), '250  gp art objects']
       elsif d100 <= 9;  [roll('2d4'), '750  gp art objects']
       elsif d100 <= 12; [roll('3d6'), '500  gp gems']
@@ -139,9 +142,10 @@ module Treasure
       elsif d100 <= 98; [roll('3d6'), '500  gp gems', magic_items('i')]
       else            ; [roll('3d6'), '1000 gp gems', magic_items('i')]
       end
+      bounty.set_items items
     else
-      puts [roll('12d6*1000'), 'GP', roll('8d6*100'), 'PP'].join ' '
-      if d100 <= 2    ; []
+      bounty.set_coin gp: roll('12d6*1000'), pp: roll('8d6*100')
+      items = if d100 <= 2; []
       elsif d100 <= 5;  [roll('3d6'), '1000 gp gems', magic_items('c', '1d8')]
       elsif d100 <= 8;  [roll('1d10'), '2500 gp art objects', magic_items('c', '1d8')]
       elsif d100 <= 11; [roll('1d4'), '7500 gp art objects', magic_items('c', '1d8')]
@@ -167,18 +171,20 @@ module Treasure
       elsif d100 <= 95; [roll('1d4'), '7500 gp art objects', magic_items('i', '1d4')]
       else            ; [roll('1d8'), '5000 gp gems', magic_items('i', '1d4')]
       end
+      bounty.set_items items
     end
-    puts treasure&.join(" ")
+    bounty
   end
 
   def self.magic_items table_name, qty_cmd='1'
     qty = Roll.new(qty_cmd).value
-    title = [Ansi.fmt(Ansi::CYAN), "\nMagic items:", Ansi.fmt(Ansi::YELLOW)].join
-    items = (1..qty).map do |i|
+    (1..qty).map do |i|
       table_index = Roll.new('1d100').value
-      MAGIC_ITEMS_TABLES[table_name][table_index]&.strip
+      $stderr.puts [table_name, table_index].join ' '
+      table = MAGIC_ITEMS_TABLES[table_name]
+      $stderr.puts "Warning: no magic item table #{table_name}" unless table
+      table && table[table_index]&.strip
     end.select {|x| x && x.length > 0 }
-    items.unshift(title).join("\n")
   end
 
   # Called only during startup
@@ -186,14 +192,29 @@ module Treasure
     lines = File.read(File.join DATA_DIR, "magic-items-table-#{table_name}.tsv").split("\n")
     lines.reduce([nil] * 100) do |acc, line|
       range, item = line.split(/\s*\t/)
-      a, z = range.split('-').map(&:to_i)
+      a, z = range.split(/[-–]/).map(&:to_i)
       z ||= a
       (a..z).each {|i| acc[i] = item }
       acc
     end
   end
 
-  MAGIC_ITEMS_TABLES = ('a'..'g').map { |key|
+  class Bounty < Struct.new(:cp, :sp, :gp, :ep, :pp, :items, :magic_items)
+    def set_coin values
+      self.cp = values[:cp]
+      self.sp = values[:sp]
+      self.ep = values[:ep]
+      self.gp = values[:gp]
+      self.pp = values[:pp]
+    end
+
+    def set_items array
+      self.items = array[0..1].join(' ').presence
+      self.magic_items = array[2]
+    end
+  end
+
+  MAGIC_ITEMS_TABLES = ('a'..'i').map { |key|
     [key, load_magic_items_table(key)]
   }.to_h
 end

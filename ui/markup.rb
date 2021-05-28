@@ -62,6 +62,8 @@ module Markup
 
   def gray text; color 'gray', text; end
   def green text; color 'green', text; end
+  def orange text; color 'orange', text; end
+  def purple text; color 'purple', text; end
   def red text; color 'red', text; end
   def yellow text; color 'yellow', text; end
 end
