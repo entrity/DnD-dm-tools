@@ -38,11 +38,11 @@ class CharacterView < BuilderView
   end
 
   def on_copy_to_cast_activated widget
-    CastUI.instance.add @character.dup
+    CastUI.instance.copy @character
   end
 
   def on_copy_to_encounter_activated widget
-    EncounterUI.instance.add @character.dup
+    EncounterUI.instance.copy @character
   end
 
   private

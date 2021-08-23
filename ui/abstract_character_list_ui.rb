@@ -28,6 +28,10 @@ class AbstractCharacterListUI
     end
   end
 
+  def copy character
+    add character&.dup
+  end
+
   def children; @widget.children; end
 
   def reload

@@ -28,6 +28,10 @@ class Character
 
   def cr; eval "#{challenge_rating}.0"; end
 
+  def dup
+    self.class.new @attrs.dup
+  end
+
   def inspect
     %Q{<#{klass}:#{object_id} #{name} hp="#{hp}" lv="#{level}">}
   end
