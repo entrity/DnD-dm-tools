@@ -8,9 +8,10 @@ class PlayerClassName < String; end
 class Pc < Character
   attr_accessor :name, :level
 
-  def initialize *args, **attrs
-    super attrs
-    @name, @level = args
+  def initialize attrs={}
+    self.name = attrs['name'] if attrs.is_a?(Hash)
+    super
+    self.is_pc = true
   end
 
   def challenge_rating

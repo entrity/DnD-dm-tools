@@ -60,6 +60,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Save _As</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="save" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -75,6 +76,38 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Copy</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">To _Cast</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_copy_to_cast_activated" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">To _Encounter</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_copy_to_encounter_activated" swapped="no"/>
                       </object>
                     </child>
                   </object>

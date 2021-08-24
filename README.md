@@ -16,7 +16,10 @@
 
 You will find yourself in a pry inside of a Game object. See [#Playing](#playing) for commands.
 
-## Playing
+## Playing on the command line
+Even in the gui, there is a command-line I/O.
+
+* `char` - enter `char` to get the currently selected character, the one displayed in the main pane.
 
 ```ruby
 # Save progress to a file

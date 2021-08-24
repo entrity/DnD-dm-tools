@@ -20,7 +20,7 @@ class SearchUI
   private
 
   def load_autocomplete
-    autocomplete_model = Gtk::ListStore.new String, SearchUI::SearchUIRow
+    autocomplete_model = Gtk::ListStore.new String, SearchUI::SearchUIRow, String
     items = []
     items += Character::PlayerClassLibrary.instance.list.map do |s|
       SearchUI::PlayerClassRow.new(s)
@@ -36,6 +36,7 @@ class SearchUI
       x = autocomplete_model.append
       x.set_value 0, "#{obj.class::EMOJI} #{obj.name}"
       x.set_value 1, obj
+      x.set_value 2, obj.name.downcase
     end
     completion = Gtk::EntryCompletion.new
     completion.set_minimum_key_length 0
@@ -58,8 +59,8 @@ class SearchUI
 
   def match_func(entry_completion, entry_value, list_obj)
     entry_text = entry_completion.entry.text
-    obj_text = list_obj.get_value(0)
-    return obj_text.downcase.include?(entry_text.downcase)
+    downcase_name = list_obj.get_value(2)
+    return downcase_name.include?(entry_text.downcase)
   end
 end
 
@@ -72,6 +73,7 @@ class SearchUI::SearchUIRow
   end
 
   def show_in_main
+    MainUI.instance.set_selection @item
     MainUI.instance.set_content view
   end
 
@@ -85,7 +87,7 @@ end
 class SearchUI::MonsterRow < SearchUI::SearchUIRow
   def initialize monster
     super()
-    @monster = monster
+    @item = @monster = monster
     @name = monster['name']
   end
 
@@ -101,21 +103,21 @@ class SearchUI::PlayerClassRow < SearchUI::SearchUIRow
   COLOR = '#88dd88'
   EMOJI = "\u{1F9D9}" # U+1F9D9 U+200D U+2642 U+FE0F
 
-  def initialize klass
+  def initialize klass_hash
     super()
-    @klass = klass
-    @name = klass['name']
+    @item = @klass_hash = klass_hash
+    @name = klass_hash['name']
   end
 
   def view
-    PlayerClassView.new @klass
+    PlayerClassView.new @klass_hash
   end
 end
 
 class SearchUI::SpellRow < SearchUI::SearchUIRow
   def initialize spell
     super()
-    @spell = spell
+    @item = @spell = spell
     @name = spell['name']
   end
 

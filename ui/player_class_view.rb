@@ -1,4 +1,5 @@
 require 'gtk3'
+require_relative '../lib/character/player_class'
 require_relative '../lib/constants'
 require_relative 'secondary_window'
 require_relative 'builder_view'
@@ -17,6 +18,14 @@ class PlayerClassView < BuilderView
     set_equipment flow_labels.shift.first
     set_table obj('table Box')
     set_class_abilities obj('abilities Label')
+  end
+
+  def on_copy_to_cast_activated widget
+    CastUI.instance.copy Pc.new @klass
+  end
+
+  def on_copy_to_encounter_activated widget
+    EncounterUI.instance.copy Pc.new @klass
   end
 
   private

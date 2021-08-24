@@ -18,8 +18,8 @@ class Character
 
   def initialize attrs={}
     attrs = MonsterLibrary.instance[attrs] if attrs.is_a? String
-    self.name ||= klass
     @attrs = attrs.dup
+    self.name ||= @klass
   end
 
   def <=> other

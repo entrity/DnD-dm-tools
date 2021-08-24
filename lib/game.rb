@@ -41,6 +41,10 @@ class Game
     end
   end
 
+  def add_pc name, level
+    @cast << Character.new(name: name, level: level)
+  end
+
   def pc name
     @cast.find {|c| c.name.to_s.downcase.strip == name.to_s.downcase.strip }
   end

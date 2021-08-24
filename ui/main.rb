@@ -57,6 +57,15 @@ class MainUI
     EncountersUI.instance.load enc
   end
 
+  def on_copy_to_cast_activated _widget
+    copy_selection_to CastUI.instance
+  end
+
+  def on_copy_to_encounter_activated _widget
+    copy_selection_to EncounterUI.instance
+    invalidate_encounter_summary
+  end
+
   def puts *args
     @dice_console.append *args
   end
@@ -91,7 +100,23 @@ class MainUI
     @content_wiget.add child_widget, expand: true
   end
 
+  def set_selection item
+    @selection = item # PlayerClass subclass, Character, Spell
+  end
+
   private
+
+  def copy_selection_to collection
+    if @selection.is_a? Character
+      collection.copy @selection
+    elsif @selection.is_a? MonsterLibrary::Item
+      collection.copy Monster.new @selection
+    elsif @selection.is_a?(Class) && @selection < Character::PlayerClass
+      collection.copy @selection.new
+    elsif @selection.is_a? Hash
+      collection.copy Pc.new @selection
+    end
+  end
 
   # Get CSS
   def init_css
