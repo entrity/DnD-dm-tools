@@ -6,6 +6,9 @@ require_relative './treasure'
 require 'forwardable'
 require 'singleton'
 
+THIS_DIR = File.dirname(__FILE__)
+LAST_DATA_PATH = File.join(THIS_DIR, '.last-load')
+
 class Game
   extend Forwardable
   include Singleton
@@ -21,6 +24,7 @@ class Game
     @fpath ||= fpath
     @notes ||= []
     @terrain ||= nil
+    load_last_game
   end
 
   def load fpath
@@ -29,6 +33,7 @@ class Game
       @fpath = fpath
       attrs = Marshal.load File.binread fpath
       attrs.each {|k,v| instance_variable_set(k,v) }
+      File.write LAST_DATA_PATH, fpath
     end
   end
 
@@ -51,5 +56,16 @@ class Game
 
   def npcs
     @cast.select {|c| !c.is_pc }
+  end
+
+  private
+
+  def load_last_game
+    if File.exists? LAST_DATA_PATH
+      game_path = File.read LAST_DATA_PATH
+      if File.exists? game_path
+        load game_path
+      end
+    end
   end
 end
