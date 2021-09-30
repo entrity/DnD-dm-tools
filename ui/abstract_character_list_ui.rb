@@ -34,6 +34,12 @@ class AbstractCharacterListUI
 
   def children; @widget.children; end
 
+  def highlight_row idx
+    if row = @widget.children[idx]
+      @widget.select_row row
+    end
+  end
+
   def reload
     children.each {|child| @widget.remove(child) }
     game_members.each {|c| @widget.add @row_klass.new(c) }
