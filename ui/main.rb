@@ -151,6 +151,8 @@ class MainUI
           @search_ui.entry.grab_focus
         when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
           @gtk_main_loop.quit
+        when Gdk::Keyval::KEY_r # Refresh character view
+          set_character @character
         when Gdk::Keyval::KEY_space # Toggle console
           toggle_console_visibility
         when Gdk::Keyval::KEY_Left
