@@ -172,7 +172,10 @@ class MainUI
         when Gdk::Keyval::KEY_1, Gdk::Keyval::KEY_2, Gdk::Keyval::KEY_3, Gdk::Keyval::KEY_4, Gdk::Keyval::KEY_5, Gdk::Keyval::KEY_6, Gdk::Keyval::KEY_7, Gdk::Keyval::KEY_8, Gdk::Keyval::KEY_9
           idx = event.keyval - Gdk::Keyval::KEY_1
           listbox = EncounterUI.instance.highlight_row(idx)
-          set_character listbox.children[idx].character
+          if member_row = listbox.children[idx]
+            member_row.grab_focus
+            set_character member_row.character
+          end
         end
       end
     end
