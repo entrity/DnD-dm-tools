@@ -40,6 +40,10 @@ class AbstractCharacterListUI
     end
   end
 
+  def redraw
+    @widget.children.each {|c| c.reset_name_text }
+  end
+
   def reload
     children.each {|child| @widget.remove(child) }
     game_members.each {|c| @widget.add @row_klass.new(c) }
@@ -78,7 +82,7 @@ class AbstractCharacterRow < Gtk::ListBoxRow
     @name_label.set_markup build_name_text
   end
 
-  private
+  protected
 
   def build_name_text
     ctrl = character.is_pc ? green('P') : red('N')

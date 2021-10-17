@@ -5,6 +5,11 @@ require_relative './markup'
 module MenuHandlers
   include Markup
 
+  def refresh_encounter_ui
+    puts "doing refresh"
+    EncounterUI.instance.redraw
+  end
+
   def roll_camping_event
     puts case rand(12)
     when 1

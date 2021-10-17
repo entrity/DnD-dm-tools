@@ -124,4 +124,11 @@ class EncounterUI::MemberRow < AbstractCharacterRow
       end
     end
   end
+
+  protected
+
+  def build_name_text
+    ctrl = character.is_pc ? green('P') : red('N')
+    "%s %s <i>%d</i>" % [ctrl, colored_character(@character, true), @character.hp.to_i]
+  end
 end

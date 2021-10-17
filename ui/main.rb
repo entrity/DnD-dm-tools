@@ -91,6 +91,7 @@ class MainUI
 
   def set_character character
     @character = character
+    puts "sel %s (%d) %s" % [character.name, character.hp.to_i, character.object_id]
     set_content CharacterView.new character
   end
 
@@ -116,6 +117,10 @@ class MainUI
     elsif @selection.is_a? Hash
       collection.copy Pc.new @selection
     end
+  end
+
+  def focus_console
+    @dice_console.input.grab_focus
   end
 
   # Get CSS
@@ -146,7 +151,7 @@ class MainUI
       if event.state.control_mask?
         case event.keyval
         when Gdk::Keyval::KEY_k # Command input
-          @dice_console.input.grab_focus
+          focus_console
         when Gdk::Keyval::KEY_f # Search
           @search_ui.entry.grab_focus
         when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
@@ -169,13 +174,38 @@ class MainUI
           @font_size ||= 18
           @font_size -= 2
           @window.override_font Pango::FontDescription.new "#{@font_size}px"
-        when Gdk::Keyval::KEY_1, Gdk::Keyval::KEY_2, Gdk::Keyval::KEY_3, Gdk::Keyval::KEY_4, Gdk::Keyval::KEY_5, Gdk::Keyval::KEY_6, Gdk::Keyval::KEY_7, Gdk::Keyval::KEY_8, Gdk::Keyval::KEY_9
-          idx = event.keyval - Gdk::Keyval::KEY_1
-          listbox = EncounterUI.instance.highlight_row(idx)
-          if member_row = listbox.children[idx]
-            member_row.grab_focus
-            set_character member_row.character
-          end
+        when Gdk::Keyval::KEY_1..Gdk::Keyval::KEY_9
+          select_char_from_encounter event.keyval - Gdk::Keyval::KEY_1
+        when Gdk::Keyval::KEY_exclam # 33
+          select_char_from_encounter 1
+          focus_console
+        when 64 # 64
+          select_char_from_encounter 2
+          focus_console
+        when 35 # 35
+          select_char_from_encounter 3
+          focus_console
+        when Gdk::Keyval::KEY_dollar # 36
+          select_char_from_encounter 4
+          focus_console
+        when Gdk::Keyval::KEY_percent # 37
+          select_char_from_encounter 5
+          focus_console
+        when 94 # 94
+          select_char_from_encounter 6
+          focus_console
+        when Gdk::Keyval::KEY_ampersand # 38
+          select_char_from_encounter 7
+          focus_console
+        when Gdk::Keyval::KEY_asterisk # 42
+          select_char_from_encounter 8
+          focus_console
+        when Gdk::Keyval::KEY_parenleft # 40
+          select_char_from_encounter 9
+          focus_console
+        when Gdk::Keyval::KEY_parenright # 41
+          select_char_from_encounter 10
+          focus_console
         end
       end
     end
@@ -207,6 +237,15 @@ class MainUI
     case trigger.label
     when '_Cast'; @builder.get_object('cast Box').set_visible(trigger.active?)
     else; @builder.get_object('encounters Box').set_visible(trigger.active?)
+    end
+  end
+
+  def select_char_from_encounter idx
+    if listbox = EncounterUI.instance.highlight_row(idx)
+      if member_row = listbox.children[idx]
+        member_row.grab_focus
+        set_character member_row.character
+      end
     end
   end
 
