@@ -151,3 +151,18 @@ class Encounter
   UNDERWATER = "Underwater"
   URBAN = "Urban"
 end
+if __FILE__ == $0
+  # Print CR table for party of given levels
+  ally_lvls = $ARGV.map(&:to_i)
+  p ally_lvls
+  xp_sums_by_difficulty = [0,0,0,0]
+  xp_sums_by_difficulty.each_with_index do |_, difficulty_idx|
+    ally_lvls.each do |lvl|
+      xp = Table['xp-thresholds-by-character-level.tsv'][lvl - 1][difficulty_idx].to_i
+      xp_sums_by_difficulty[difficulty_idx] += xp
+    end
+  end
+  p xp_sums_by_difficulty
+  crs_by_difficulty = xp_sums_by_difficulty.map { |xp| Encounter.cr_for_xp xp }
+  p crs_by_difficulty
+end
