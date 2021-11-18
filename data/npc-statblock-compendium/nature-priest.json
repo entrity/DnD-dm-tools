@@ -1,0 +1,73 @@
+{
+  "slug": "nature-priest",
+  "name": "Nature Priest",
+  "size": "Medium",
+  "type": "humanoid",
+  "subtype": null,
+  "group": null,
+  "alignment": "any",
+  "armor_class": 16,
+  "armor_desc": "chain mail",
+  "hit_points": 27,
+  "hit_dice": "2d8+2",
+  "speed": {
+    "walk": 30
+  },
+  "strength": 10,
+  "dexterity": 10,
+  "constitution": 12,
+  "intelligence": 13,
+  "wisdom": 16,
+  "charisma": 13,
+  "strength_save": null,
+  "dexterity_save": null,
+  "constitution_save": null,
+  "intelligence_save": null,
+  "wisdom_save": null,
+  "charisma_save": null,
+  "perception": null,
+  "skills": {
+  	"Religion": 3,
+  	"Persuasion": 3,
+  	"Medicine": 7
+  },
+  "damage_vulnerabilities": "",
+  "damage_resistances": "",
+  "damage_immunities": "",
+  "condition_immunities": "",
+  "senses": "passive Perception 13",
+  "languages": "any two languages",
+  "challenge_rating": "1",
+  "actions": [
+    {
+      "name": "Mace",
+      "desc": "Melee Weapon Attack. +2 to hit, reach 5 ft, one target. Hit: 3 (1d6) bludgeoning damage.",
+      "attack_bonus": 2,
+      "damage_dice": "1d6",
+      "damage_bonus": 1
+    },
+    {
+      "name": "Charm Animals and Plants (Recharge After a Short or Long Rest)",
+      "desc": "Each animal and plant within 30 feet of the priest that can see and hear it must make a DC 13 Wisdom saving throw. On a failed save, the target is charged by the priest until the end of its next turn.",
+      "attack_bonus": 0,
+      "damage_dice": "",
+      "damage_bonus": 1
+    }
+  ],
+  "reactions": "",
+  "legendary_desc": "",
+  "legendary_actions": "",
+  "special_abilities": [
+    {
+      "name": "Spellcasting",
+      "desc": "The priest is a 5th-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 13, +5 to hit with spell attacks). It has the following cleric spells prepared.\n\nCantrips (at will): guidance, thorn whip, druidcraft.\n1st level (4 slots): animal friendship, goodberry, speak with animals\n2nd level (3 slots): barkskin, spike growth\n3rd level (2 slots): plant growth, wind wall",
+      "attack_bonus": null,
+      "damage_dice": null
+    }
+  ],
+  "spell_list": [],
+  "img_main": null,
+  "document__slug": "wotc-srd",
+  "document__title": "Systems Reference Document",
+  "document__license_url": "http://open5e.com/legal"
+}

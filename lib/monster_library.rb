@@ -99,6 +99,10 @@ class MonsterLibrary
       results = JSON.parse(File.read fpath)['results']
       acc + results.map {|h| Item.new(h) }
     end
+    Dir[File.join DATA_DIR, 'npc-statblock-compendium', '*.json'].each do |fpath|
+      parsed = JSON.parse(File.read fpath)
+      @open5e_array << Item.new(parsed)
+    end
     @open5e_hash = @open5e_array.map {|m| [m['name'], m]}.to_h
   end
 

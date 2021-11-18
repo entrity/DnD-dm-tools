@@ -1,0 +1,79 @@
+{
+  "slug": "herbalist",
+  "name": "Herbalist",
+  "size": "Medium",
+  "type": "humanoid",
+  "subtype": null,
+  "group": null,
+  "alignment": "any",
+  "armor_class": 14,
+  "armor_desc": "hide armor",
+  "hit_points": 66,
+  "hit_dice": "2d8+2",
+  "speed": {
+    "walk": 30
+  },
+  "strength": 11,
+  "dexterity": 14,
+  "constitution": 12,
+  "intelligence": 11,
+  "wisdom": 17,
+  "charisma": 11,
+  "strength_save": null,
+  "dexterity_save": null,
+  "constitution_save": null,
+  "intelligence_save": null,
+  "wisdom_save": null,
+  "charisma_save": null,
+  "perception": null,
+  "skills": {
+  	"Nature": 4,
+  	"Perception": 5,
+  	"Survival": 7
+  },
+  "damage_vulnerabilities": "",
+  "damage_resistances": "",
+  "damage_immunities": "poison",
+  "condition_immunities": "poisoned",
+  "senses": "passive Perception 15",
+  "languages": "Druidic plus any one language",
+  "challenge_rating": "1",
+  "actions": [
+    {
+      "name": "Shortsword",
+      "desc": "Melee Weapon Attack. +4 to hit, reach 5 ft, one target. Hit: 5 (1d6 + 2) piercing damage plus 7 (2d6) poison damage.",
+      "attack_bonus": 4,
+      "damage_dice": "1d6 + 2",
+      "damage_bonus": 1
+    },
+    {
+      "name": "Shortbow",
+      "desc": "Ranged Weapon Attack: +4 to hit, range 80/320 ft, one target. Hit: 5 (1d6 + 2) piercing damage plus 7 (2d6) poison damage.",
+      "attack_bonus": 3,
+      "damage_dice": "1d6 + 2",
+      "damage_bonus": 1
+    }
+  ],
+  "reactions": "",
+  "legendary_desc": "",
+  "legendary_actions": "",
+  "special_abilities": [
+    {
+      "name": "Disarming Attach (1/Turn)",
+      "desc": "When the herbalist hits a creature with an attack from its shortsword or shortbow, it can choose to force the target to succeed on a DC 12 Strength saving throw or take an additional 3 (1d6) piercing damage from the attack and drop an object it is holding of the herbalist's choice. The object lands at its feet.",
+      "attack_bonus": null,
+      "damage_dice": null
+    },
+    {
+      "name": "Poultice (3/Day)",
+      "desc": "The herbalist spends 1 minute to apply a poultice to a wounded creature. That creature regains 14 (4d6) hit points. Alternatively, it can use this ability to cure the creature of one poison afflicting it.",
+      "attack_bonus": null,
+      "damage_dice": null
+    }
+  ],
+  "spell_list": [],
+  "img_main": null,
+  "document__slug": "wotc-srd",
+  "document__title": "Systems Reference Document",
+  "document__license_url": "http://open5e.com/legal"
+}

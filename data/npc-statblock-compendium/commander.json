@@ -1,0 +1,81 @@
+{
+  "slug": "commander",
+  "name": "Commander",
+  "size": "Medium",
+  "type": "humanoid",
+  "subtype": null,
+  "group": null,
+  "alignment": "any",
+  "armor_class": 18,
+  "armor_desc": "plate",
+  "hit_points": 33,
+  "hit_dice": "6d8+6",
+  "speed": {
+    "walk": 30
+  },
+  "strength": 15,
+  "dexterity": 12,
+  "constitution": 13,
+  "intelligence": 12,
+  "wisdom": 12,
+  "charisma": 15,
+  "strength_save": null,
+  "dexterity_save": null,
+  "constitution_save": null,
+  "intelligence_save": null,
+  "wisdom_save": null,
+  "charisma_save": null,
+  "perception": null,
+  "skills": {
+  	"Animal Handling": 3,
+  	"History": 3,
+  	"Intimidation": 4,
+  	"Persuasion": 4
+  },
+  "damage_vulnerabilities": "",
+  "damage_resistances": "",
+  "damage_immunities": "",
+  "condition_immunities": "",
+  "senses": "passive Perception 11",
+  "languages": "any two languages",
+  "challenge_rating": "1",
+  "actions": [
+    {
+      "name": "Multiattack",
+      "desc": "The commander makes two melee weapon attacks, or it makes one melee or ranged weapon attack and uses its commander's strike.",
+      "attack_bonus": 4,
+      "damage_dice": "1d6 + 2",
+      "damage_bonus": 1
+    },
+    {
+      "name": "Greatsword",
+      "desc": "Melee Weapon Attack: +4 to hit, reach 5., one target. Hit: 9 (2d6 + 2) slashing damage",
+      "attack_bonus": 3,
+      "damage_dice": "1d6 + 2",
+      "damage_bonus": 1
+    },
+    {
+      "name": "Heavy Crossbow",
+      "desc": "Ranged Weapon Attack: +3 to hit, range 100/400 ., one target. Hit: 6 (1d10 + 1) piercing damage.",
+      "attack_bonus": 3,
+      "damage_dice": "1d6 + 2",
+      "damage_bonus": 1
+    },
+    {
+      "name": "Commander's Strike",
+      "desc": "The commander chooses one friendly creature that can see and hear it. That creature can immediately use its reac on to make one weapon a ack, adding 3 (1d6) to the a ack's damage roll.",
+      "attack_bonus": 3,
+      "damage_dice": "1d6 + 2",
+      "damage_bonus": 1
+    }
+  ],
+  "reactions": "",
+  "legendary_desc": "",
+  "legendary_actions": "",
+  "special_abilities": [],
+  "spell_list": [],
+  "img_main": null,
+  "document__slug": "wotc-srd",
+  "document__title": "Systems Reference Document",
+  "document__license_url": "http://open5e.com/legal"
+}
