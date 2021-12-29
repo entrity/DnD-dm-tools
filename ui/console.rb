@@ -46,6 +46,8 @@ class Console
     append %Q{<span color="#aaa">%s</span>} % cmd unless cmd.strip.empty?
     begin
       append evaluate(cmd)
+      MainUI.instance.refresh
+      MainUI.instance.focus_console
     rescue => ex
       puts ex.backtrace, ex.inspect
       append "#{ex.inspect}"

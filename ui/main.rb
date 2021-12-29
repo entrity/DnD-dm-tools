@@ -35,6 +35,10 @@ class MainUI
     $stdout.puts "MainUI#initialize"
   end
 
+  def focus_console
+    @dice_console.input.grab_focus
+  end
+
   def invalidate_encounter_summary
     encounter = Game.instance.encounter
     difficulty = encounter.difficulty
@@ -119,10 +123,6 @@ class MainUI
     end
   end
 
-  def focus_console
-    @dice_console.input.grab_focus
-  end
-
   # Get CSS
   def init_css
     style_provider = Gtk::CssProvider.new
@@ -178,34 +178,24 @@ class MainUI
           select_char_from_encounter event.keyval - Gdk::Keyval::KEY_1
         when Gdk::Keyval::KEY_exclam # 33
           select_char_from_encounter 1
-          focus_console
         when 64 # 64
           select_char_from_encounter 2
-          focus_console
         when 35 # 35
           select_char_from_encounter 3
-          focus_console
         when Gdk::Keyval::KEY_dollar # 36
           select_char_from_encounter 4
-          focus_console
         when Gdk::Keyval::KEY_percent # 37
           select_char_from_encounter 5
-          focus_console
         when 94 # 94
           select_char_from_encounter 6
-          focus_console
         when Gdk::Keyval::KEY_ampersand # 38
           select_char_from_encounter 7
-          focus_console
         when Gdk::Keyval::KEY_asterisk # 42
           select_char_from_encounter 8
-          focus_console
         when Gdk::Keyval::KEY_parenleft # 40
           select_char_from_encounter 9
-          focus_console
         when Gdk::Keyval::KEY_parenright # 41
           select_char_from_encounter 10
-          focus_console
         end
       end
     end
@@ -247,6 +237,9 @@ class MainUI
         set_character member_row.character
       end
     end
+    focus_console
+    @dice_console.input.set_text "char."
+    @dice_console.input.set_position -1
   end
 
   def toggle_visible trigger
