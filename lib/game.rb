@@ -16,23 +16,24 @@ class Game
   attr_reader    :cast, :console_histories, :encounters, :notes, :terrain
   attr_accessor  :char, :encounter, :fpath
 
-  def initialize fpath=nil
+  def initialize
     @cast ||= [] # PCs and NPCs
     @console_histories ||= {} # History of console commands
     @encounter ||= Encounter.new # Current encounter
     @encounters = []
-    @fpath ||= fpath
+    @fpath = nil
     @notes ||= []
     @terrain ||= nil
-    load_last_game
   end
 
   def load fpath
-    if fpath && File.exists?(fpath)
+    if fpath.nil?
+      load_last_game
+    elsif File.exists?(fpath)
       puts "Game loaded from #{fpath}"
-      @fpath = fpath
       attrs = Marshal.load File.binread fpath
       attrs.each {|k,v| instance_variable_set(k,v) }
+      @fpath = fpath
       File.write LAST_DATA_PATH, fpath
     end
   end
