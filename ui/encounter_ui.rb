@@ -107,7 +107,11 @@ class EncounterUI::MemberRow < AbstractCharacterRow
       button.set_visible true
       button.set_tooltip_text 'Delete'
       button.signal_connect('clicked') do |widget|
-        EncounterUI.instance.remove @character
+        ui = EncounterUI.instance
+        i = ui.children.index { |c| c.character == @character }
+        ui.remove @character
+        next_i = [i, ui.children.length-1].min
+        ui.children[next_i].grab_focus
       end
       box.add button
     end

@@ -95,6 +95,7 @@ class MainUI
 
   def set_character character
     @character = character
+    set_selection character
     puts "sel %s (%d) %s" % [character.name, character.hp.to_i, character.object_id]
     set_content CharacterView.new character
   end
@@ -152,6 +153,8 @@ class MainUI
         case event.keyval
         when Gdk::Keyval::KEY_k # Command input
           focus_console
+        when Gdk::Keyval::KEY_e # Encounter
+          EncounterUI.instance.children.first&.grab_focus
         when Gdk::Keyval::KEY_f # Search
           @search_ui.entry.grab_focus
         when Gdk::Keyval::KEY_q, Gdk::Keyval::KEY_w # Exit
