@@ -7,7 +7,7 @@ require 'forwardable'
 require 'singleton'
 
 THIS_DIR = File.dirname(__FILE__)
-LAST_DATA_PATH = File.join(THIS_DIR, '.last-load')
+LAST_DATA_PATH = File.join(File.dirname(THIS_DIR), '.last-load')
 
 class Game
   extend Forwardable
@@ -66,8 +66,10 @@ class Game
   private
 
   def load_last_game
+    puts "Trying to load last game. Looking for #{LAST_DATA_PATH}"
     if File.exists? LAST_DATA_PATH
-      game_path = File.read LAST_DATA_PATH
+      game_path = File.read(LAST_DATA_PATH).gsub(/[\r\n]/, '')
+      puts "Found #{game_path} in #{LAST_DATA_PATH}"
       if File.exists? game_path
         load game_path
       end

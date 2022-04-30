@@ -60,7 +60,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Save _As</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="save" swapped="no"/>
+                        <signal name="activate" handler="save_dialog" swapped="no"/>
                       </object>
                     </child>
                     <child>

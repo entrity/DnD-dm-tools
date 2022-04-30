@@ -40,10 +40,11 @@ class Console
   def run_command
     @history_cursor = 0
     cmd = @input.text.strip
+    return if cmd.empty?
     history.delete cmd
     history.push cmd
     @input.set_text ''
-    append %Q{<span color="#aaa">%s</span>} % cmd unless cmd.strip.empty?
+    append %Q{<span color="#aaa">%s</span>} % cmd
     begin
       append evaluate(cmd)
       MainUI.instance.refresh
