@@ -23,7 +23,7 @@ class MonsterLibrary
     if name_or_idx.is_a? Integer
       @open5e_array[name_or_idx]
     else
-      @open5e_hash[name_or_idx] || @open5e_array.find {|v| v['slug'].downcase == name_or_idx.downcase }
+      @open5e_hash[name_or_idx.to_s] || @open5e_array.find {|v| v['slug'].downcase == name_or_idx.to_s.downcase }
     end
   end
 
@@ -71,8 +71,7 @@ class MonsterLibrary
   end
 
   def self.sample *args
-    @library ||= MonsterLibrary.new
-    @library.sample *args
+    MonsterLibrary.instance.sample *args
   end
 
   private

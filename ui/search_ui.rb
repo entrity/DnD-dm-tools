@@ -1,5 +1,5 @@
 require 'gtk3'
-require_relative '../lib/characters'
+require_relative '../lib/character/monster'
 require_relative '../lib/character/player_class'
 require_relative '../lib/character/player_class_library'
 require_relative '../lib/monster_library'
@@ -52,7 +52,6 @@ class SearchUI
     completion.signal_connect("match-selected") do |completion, treemodel, treeiter|
       obj = treemodel.get_value(treeiter, 1)
       obj.activate
-      @entry.set_text ''
     end
     @entry.set_completion completion
   end
@@ -91,11 +90,16 @@ class SearchUI::MonsterRow < SearchUI::SearchUIRow
     @name = monster['name']
   end
 
+  def activate
+    EncounterUI.instance.add Monster.build @name
+  end
+
   COLOR = '#a8a866'
   EMOJI = "\u{1F47B}"
 
   def view
-    CharacterView.new Monster.new @monster
+    dict = @monster.to_h.transform_keys(&:to_s)
+    CharacterView.new Monster.new.load_open5e(dict)
   end
 end
 

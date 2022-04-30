@@ -625,7 +625,7 @@
                         <property name="can_focus">True</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">False</property>
-                        <property name="placeholder_text" translatable="yes">Search</property>
+                        <property name="placeholder_text" translatable="yes">Search (Ctrl+f)</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -768,7 +768,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Encounter</property>
+                        <property name="label" translatable="yes">Encounter (Ctrl+e)</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>

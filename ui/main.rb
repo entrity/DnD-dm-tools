@@ -2,7 +2,6 @@
 
 require "gtk3"
 require 'singleton'
-require_relative '../lib/characters'
 require_relative '../lib/game'
 require_relative '../lib/util'
 require_relative './cast_ui'
@@ -96,6 +95,7 @@ class MainUI
   def set_character character
     @character = character
     set_selection character
+    return if character.nil?
     puts "sel %s (%d) %s" % [character.name, character.hp.to_i, character.object_id]
     set_content CharacterView.new character
   end
@@ -116,7 +116,7 @@ class MainUI
     if @selection.is_a? Character
       collection.copy @selection
     elsif @selection.is_a? MonsterLibrary::Item
-      collection.copy Monster.new @selection
+      collection.copy Monster.build @selection.name
     elsif @selection.is_a?(Class) && @selection < Character::PlayerClass
       collection.copy @selection.new
     elsif @selection.is_a? Hash
@@ -141,7 +141,7 @@ class MainUI
     @builder.connect_signals {|handler| method(handler) }
     @window = @builder.get_object("window")
     @window.set_title "D&D DM"
-    @window.override_font Pango::FontDescription.new "20px"
+    @window.override_font ::Pango::FontDescription.new "20px"
     @window.titlebar.set_show_close_button true
     @dice_console = DiceConsole.create @builder.get_object('dice console input'), @builder.get_object('dice console output')
     @encounters_list = @builder.get_object('encounters-list Menu')
@@ -241,7 +241,7 @@ class MainUI
       end
     end
     focus_console
-    @dice_console.input.set_text "char."
+    @dice_console.input.set_text "char.hp -= "
     @dice_console.input.set_position -1
   end
 

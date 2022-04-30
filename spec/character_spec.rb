@@ -3,6 +3,14 @@ require 'spec_helper.rb'
 describe Pc do
   let(:pc) { Pc.new 'Alain', 3 }
 
+  describe '#dup' do
+    it 'works' do
+      orig = pc
+      copy = pc.dup
+      expect(orig.object_id).to_not eq(copy.object_id)
+    end
+  end
+
   describe '#xp_threshold' do
     it 'fetches threshold for level and difficulty' do
       expect(pc.xp_threshold Encounter::EASY).to eq 75

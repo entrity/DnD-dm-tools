@@ -1,11 +1,11 @@
-require 'gtk'
+require 'gtk3'
 
 module Markup::Pango
 
   def self.insert textbuffer, text, **tags
-    start, end = textbuffer.get_selection_bounds()
+    start, finish = textbuffer.get_selection_bounds()
     tags.each do |tag|
-      textbuffer.apply_tag(tag, start, end)
+      textbuffer.apply_tag(tag, start, finish)
     end
   end
 

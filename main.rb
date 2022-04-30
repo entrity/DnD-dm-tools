@@ -14,10 +14,12 @@ OptionParser.new do |o|
   o.on('-c', '--cli', "No gui") { opts[:cli] = true }
 end.parse!
 
-Game.instance.load ARGV[0]
-
-if opts[:cli]
-  binding.pry Game.instance
-else
-  MainUI.instance.run
+if File.realpath($0) == File.realpath(__FILE__)
+  Game.instance.load ARGV[0]
+  if opts[:cli]
+    binding.pry Game.instance
+  else
+    MainUI.instance.run
+  end
 end
+

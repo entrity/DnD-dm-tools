@@ -1,24 +1,27 @@
 require 'spec_helper'
 
 describe Encounter do
-  let(:game) { Game.new('test').tap do |g|
-    g.party['jack'] = Pc.new 'jack', 3
-    g.party['jill'] = Pc.new 'jill', 4
+  let(:jack) { Pc.new 'jack', 3 }
+  let(:jill) { Pc.new 'jill', 4 }
+  let(:game) { Game.instance.tap do |g|
+    g.cast.clear
+    g.cast.push jack
+    g.cast.push jill
   end }
-  let(:party) { game.party }
-  let(:monsters) { MonsterLibrary.new }
+  let(:party) { game.pcs }
+  let(:monsters) { MonsterLibrary.instance }
   let(:enc) { Encounter.new party }
 
   describe '#cr' do
     it 'returns expected cr' do
       expect(enc.cr).to eq(0)
-      enc.add 'thug'
+      enc.cast.add Monster.build 'thug'
       expect(enc.cr).to eq(0.5)
-      enc.add 'thug'
+      enc.cast.add Monster.build 'thug'
       expect(enc.cr).to eq(1)
-      enc.add 'thug'
+      enc.cast.add Monster.build 'thug'
       expect(enc.cr).to eq(3)
-      enc.add 'bandit'
+      enc.cast.add Monster.build 'bandit'
       expect(enc.cr).to eq(3)
     end
   end
@@ -29,7 +32,7 @@ describe Encounter do
       expect(enc.cr_for_party Encounter::MEDIUM).to eq 2
       expect(enc.cr_for_party Encounter::HARD).to eq 3
       expect(enc.cr_for_party Encounter::DEADLY).to eq 3
-      game.party['jack'].level = 5
+      jack.level = 5
       expect(enc.cr_for_party Encounter::EASY).to eq 2
       expect(enc.cr_for_party Encounter::MEDIUM).to eq 3
       expect(enc.cr_for_party Encounter::HARD).to eq 4
@@ -40,30 +43,26 @@ describe Encounter do
   describe '#new' do
     it 'returns a playable encounter' do
       enc = Encounter.new party
-      enc.init 'jack', 13
-      enc.init enc.party['jill'], 12
-      enc.npcs << gob1 = Monster.new(monsters['Goblin'])
-      enc.npcs << gob2 = Monster.new(monsters['Goblin'])
-      enc.init # Roll for npcs
+      enc.set_initiative jack, 13
+      enc.set_initiative jill, 12
+      enc.cast.add gob1 = Monster.build('Goblin')
+      enc.cast.add gob2 = Monster.build('Goblin')
+      enc.roll_npcs_initiative # Roll for npcs
       expect(enc.initiative_order).to include gob1
       expect(enc.initiative_order).to include gob2
-      expect(enc.initiative_order).to include enc.party['jill']
-      expect(enc.initiative_order).to include enc.party['jack']
-      round_1 = (1..4).map { enc.pop }
-      expect(round_1).to match_array(enc.initiative_order)
-      round_2 = (1..4).map { enc.pop }
-      expect(round_2).to match_array(round_1)
+      expect(enc.initiative_order).to include jill
+      expect(enc.initiative_order).to include jack
     end
   end
 
   describe '#xp' do
     it 'returns expect xp' do
       expect(enc.xp).to eq(0)
-      enc.add 'thug'
+      enc.cast.add Monster.build('thug')
       expect(enc.xp).to eq(100)
-      enc.add 'thug'
+      enc.cast.add Monster.build('thug')
       expect(enc.xp).to eq(300) # 200*1.5
-      enc.add 'bandit'
+      enc.cast.add Monster.build('bandit')
       expect(enc.xp).to eq(450) # 225*2
     end
   end
@@ -82,12 +81,9 @@ describe Encounter do
   describe '.random' do
     it 'returns a encounter with at least one npc' do
       enc = Encounter.random party, Encounter::HARD, Encounter::ARCTIC
-      enc.init 'jack', 4
-      enc.init enc.party['jill'], 16
-      expect(enc.party['jack']).to eq(game.party['jack'])
-      expect(enc.party['jill']).to eq(game.party['jill'])
-      pc_count = enc.initiative_order.count {|char| char.is_a?(Pc) }
-      npc_count = enc.initiative_order.count {|char| char.is_a?(Npc) }
+      pcs, npcs = enc.cast.partition { |char| char.is_a? Pc }
+      pc_count = pcs.length
+      npc_count = npcs.length
       expect(pc_count).to eq 2
       expect(npc_count).to be > 0
     end

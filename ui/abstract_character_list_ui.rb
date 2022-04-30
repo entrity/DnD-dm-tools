@@ -20,11 +20,12 @@ class AbstractCharacterListUI
     reload
   end
 
-  def add character
+  def add character, set=nil
     unless character.nil? || @members[character]
-      game_members << character
+      (set||game_members) << character
       @members[character] = true
       reload
+      true
     end
   end
 
@@ -41,7 +42,7 @@ class AbstractCharacterListUI
   end
 
   def redraw
-    @widget.children.each {|c| c.reset_name_text }
+    @widget.children.each_with_index {|c, i| c.reset_name_text(i) }
   end
 
   def reload
@@ -50,10 +51,12 @@ class AbstractCharacterListUI
     @widget.invalidate_sort
   end
 
-  def remove character
-    game_members.delete character
-    @members.delete character
-    reload
+  def remove character, set=nil
+    if (set||game_members).delete? character
+      @members.delete character
+      reload
+      true
+    end
   end
 
   # Load central pane with CharacterView
@@ -78,8 +81,9 @@ class AbstractCharacterRow < Gtk::ListBoxRow
 
   attr_reader :character, :label
 
-  def reset_name_text
-    @name_label.set_markup build_name_text
+  def reset_name_text(idx=nil)
+    text = [idx, build_name_text].compact.join ','
+    @name_label.set_markup text
   end
 
   protected

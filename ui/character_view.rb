@@ -14,18 +14,18 @@ class CharacterView < BuilderView
   def_delegators :@character, :slug, :name, :level, :klass
 
   def initialize character
-    super character.attrs
+    super character.to_h
     @character = character
     set_name
     set_hp
     set_stats
     set_detail
-    add_section 'Speed', @character.speed, delimiter: " "
+    add_section 'Speed', @character.speed.to_h, delimiter: " "
     add_section 'Actions', @character.actions
     add_section 'Special abilities', @character.special_abilities
     add_section 'Legendary actions', @character.legendary_actions
-    add_section 'Skills', @character.skills, delimiter: " "
-    add_section 'Spells', @character.spell_list
+    add_section 'Skills', @character.skills.to_h, delimiter: " "
+    add_section 'Spells', @character.spells
   end
 
 
@@ -49,12 +49,12 @@ class CharacterView < BuilderView
 
   def saving_throws_markup
     [
-      labeled('str', signed(@character.strength_save.to_i)),
-      labeled('dex', signed(@character.dexterity_save.to_i)),
-      labeled('con', signed(@character.constitution_save.to_i)),
-      labeled('int', signed(@character.intelligence_save.to_i)),
-      labeled('wis', signed(@character.wisdom_save.to_i)),
-      labeled('cha', signed(@character.charisma_save.to_i)),
+      labeled('str', signed(@character.saves.str.to_i)),
+      labeled('dex', signed(@character.saves.dex.to_i)),
+      labeled('con', signed(@character.saves.con.to_i)),
+      labeled('int', signed(@character.saves.int.to_i)),
+      labeled('wis', signed(@character.saves.wis.to_i)),
+      labeled('cha', signed(@character.saves.cha.to_i)),
     ].join(' ')
   end
 
@@ -69,7 +69,7 @@ class CharacterView < BuilderView
       labeled('senses:', @character.senses),
       labeled('languages:', @character.languages),
       labeled('condition_immunities:', @character.condition_immunities),
-      labeled('perception:', @character.perception),
+      labeled('perception:', @character.passive_perception),
     ].compact.join("\n")
     obj('detail Label').set_markup(markup)
   end
@@ -77,7 +77,7 @@ class CharacterView < BuilderView
   def set_hp
     markup = []
     markup << "HP #{colored_hp}" if @character.hp
-    markup << "AC #{@character.armor_class}" if @character.armor_class
+    markup << "AC #{@character.ac}" if @character.ac
     markup = markup.compact.join(' / ')
     set 'hp Label', markup unless markup.empty?
   end

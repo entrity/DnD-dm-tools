@@ -3,8 +3,10 @@ require_relative './abstract_character_list_ui'
 
 class EncounterUI < AbstractCharacterListUI
 
+  def_delegators :'Game.instance.encounter', :cast
+
   def init widget
-    super widget, ->(){ Game.instance.encounter }, EncounterUI::MemberRow
+    super widget, ->(){ Game.instance.encounter.get_npcs }, EncounterUI::MemberRow
     widget.set_sort_func {|a,b|
       init_a, init_b = [a,b].map {|w| Game.instance.encounter.initiative_for w.character }
       init_b <=> init_a
@@ -12,9 +14,11 @@ class EncounterUI < AbstractCharacterListUI
   end
 
   def add character
-    super
-    MainUI.instance.invalidate_encounter_summary
-    EncountersUI.instance.update_name Game.instance.encounter
+    cast = Game.instance.encounter.cast
+    if super(character, cast)
+      MainUI.instance.invalidate_encounter_summary
+      EncountersUI.instance.update_name Game.instance.encounter
+    end
   end
 
   def next; prev_next 1; end
@@ -27,9 +31,10 @@ class EncounterUI < AbstractCharacterListUI
   def prev; prev_next -1; end
 
   def remove character
-    super
-    MainUI.instance.invalidate_encounter_summary
-    EncountersUI.instance.update_name Game.instance.encounter
+    if super(character, cast)
+      MainUI.instance.invalidate_encounter_summary
+      EncountersUI.instance.update_name Game.instance.encounter
+    end
   end
 
   private
@@ -84,7 +89,7 @@ class EncounterUI::MemberRow < AbstractCharacterRow
       label.set_xalign 0.0
       label.set_hexpand true
       label.set_visible true
-      label.set_ellipsize Pango::EllipsizeMode::END
+      label.set_ellipsize ::Pango::EllipsizeMode::END
       evt_box.add label
     end
     reset_name_text
@@ -132,7 +137,6 @@ class EncounterUI::MemberRow < AbstractCharacterRow
   protected
 
   def build_name_text
-    ctrl = character.is_pc ? green('P') : red('N')
-    "%s %s <i>%d</i>" % [ctrl, colored_character(@character, true), @character.hp.to_i]
+    "%s <i>%d</i>" % [colored_character(@character, true), @character.hp.to_i]
   end
 end

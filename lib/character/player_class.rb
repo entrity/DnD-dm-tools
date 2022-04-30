@@ -1,3 +1,5 @@
+require_relative '../character'
+
 class Character::PlayerClass
   @@child_classes = []
 

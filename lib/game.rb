@@ -1,8 +1,8 @@
 require_relative './constants'
 require_relative './encounter'
 require_relative './roll'
-require_relative './characters'
 require_relative './treasure'
+require_relative './character/pc'
 require 'forwardable'
 require 'singleton'
 
@@ -30,7 +30,7 @@ class Game
     if fpath.nil?
       load_last_game
     elsif File.exists?(fpath)
-      puts "Game loaded from #{fpath}"
+      puts "Game loading from #{fpath}"
       attrs = Marshal.load File.binread fpath
       attrs.each {|k,v| instance_variable_set(k,v) }
       @fpath = fpath
@@ -48,11 +48,15 @@ class Game
   end
 
   def add_pc name, level
-    @cast << Character.new(name: name, level: level)
+    @cast << ::Pc.new(name, level)
   end
 
   def pc name
     @cast.find {|c| c.name.to_s.downcase.strip == name.to_s.downcase.strip }
+  end
+
+  def pcs
+    @cast.select {|c| c.is_pc }
   end
 
   def npcs

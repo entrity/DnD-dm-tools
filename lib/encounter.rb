@@ -27,7 +27,7 @@ class Encounter
     difficulties = [EASY, MEDIUM, HARD, DEADLY]
     difficulties.map do |difficulty|
       # Compute party's XP threshold for given difficulty
-      xp_threshold = pcs.sum {|pc| Table['xp-thresholds-by-character-level.tsv'][pc.level.to_i-1][difficulty-1].to_i }
+      xp_threshold = get_pcs.sum {|pc| Table['xp-thresholds-by-character-level.tsv'][pc.level.to_i-1][difficulty-1].to_i }
       self.class.cr_for_xp(xp_threshold)
     end
   end
@@ -48,21 +48,29 @@ class Encounter
     end
   end
 
+  def get_pcs
+    cast.select {|c| c.is_pc }
+  end
+
+  def get_npcs
+    cast.select {|c| !c.is_pc }
+  end
+
   def initiative_for character; @initiative_order[character].to_i; end
 
   def hoard
     Treasure.hoard cr
   end
 
-  def pcs
-    cast.select {|c| c.is_pc }
-  end
-
-  def npcs
-    cast.select {|c| !c.is_pc }
-  end
-
   def remove character; @cast.delete character; end
+
+  def roll_npcs_initiative
+    cast.each do |char|
+      next if char.is_pc
+      value = Roll.new("d20 + #{char.mod char.dex}").value
+      set_initiative(char, value)
+    end
+  end
 
   def set_initiative character, roll_value; @initiative_order[character] = roll_value; end
 
@@ -72,8 +80,10 @@ class Encounter
 
   # XP earned from encounter
   def xp
-    xp_sum = npcs.sum {|c| xp_for_cr[c.cr] }
-    xp_sum * xp_multiplier(npcs&.length.to_i)
+    xp_sum = get_npcs.sum {|c| xp_for_cr[c.cr] }
+    xp_sum * xp_multiplier(get_npcs&.length.to_i)
+  rescue => ex
+    require 'pry'; binding.pry
   end
 
   # Find nearest XP match in table, return corresponding CR
@@ -109,7 +119,7 @@ class Encounter
       z ||= a
       n = (a..z).to_a.sample
     end
-    (1..n).each {|i| enc.npcs << Monster.new(monster_attrs) }
+    (1..n).each {|i| enc.cast << Monster.new.load_open5e(monster_attrs) }
     enc
   end
 
