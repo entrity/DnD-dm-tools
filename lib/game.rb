@@ -17,7 +17,7 @@ class Game
   attr_accessor  :char, :encounter, :fpath
 
   def initialize
-    @cast ||= [] # PCs and NPCs
+    @cast ||= Set.new # PCs and NPCs
     @console_histories ||= {} # History of console commands
     @encounter ||= Encounter.new # Current encounter
     @encounters = []
@@ -47,8 +47,10 @@ class Game
     end
   end
 
-  def add_pc name, level
-    @cast << ::Pc.new(name, level)
+  def add_pc(*args)
+    pc = ::Pc.new(*args)
+    @cast << pc
+    @encounter.pcs.add pc
   end
 
   def pc name

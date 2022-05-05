@@ -6,7 +6,7 @@ class EncounterUI < AbstractCharacterListUI
   def_delegators :'Game.instance.encounter', :cast
 
   def init widget
-    super widget, ->(){ Game.instance.encounter.get_npcs }, EncounterUI::MemberRow
+    super widget, Game.instance.encounter.npcs, EncounterUI::MemberRow
     widget.set_sort_func {|a,b|
       init_a, init_b = [a,b].map {|w| Game.instance.encounter.initiative_for w.character }
       init_b <=> init_a
@@ -14,8 +14,7 @@ class EncounterUI < AbstractCharacterListUI
   end
 
   def add character
-    cast = Game.instance.encounter.cast
-    if super(character, cast)
+    if super
       MainUI.instance.invalidate_encounter_summary
     end
   end
@@ -30,9 +29,8 @@ class EncounterUI < AbstractCharacterListUI
   def prev; prev_next -1; end
 
   def remove character
-    if super(character, cast)
+    if super
       MainUI.instance.invalidate_encounter_summary
-      EncountersUI.instance.update_name Game.instance.encounter
     end
   end
 

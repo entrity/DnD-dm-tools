@@ -2,14 +2,14 @@ require_relative '../character.rb'
 
 # A PC has player-class levels
 class Pc < Character
-  def initialize name, lvls
+  def initialize name, lvls, lvls_multiplier=nil
     @is_pc = true # is_pc means it's controlled by the party, not that it has player class levels
     super()
     @name = name
-    if lvls.is_a? Integer
-      @pc_levels = ['unspecified'] * lvls
-    else
-      @pc_levels += lvls
+    if lvls.is_a? Array
+      @pc_levels = lvls
+    elsif lvls.is_a? String
+      @pc_levels += [lvls] * lvls_multiplier
     end
   end
 

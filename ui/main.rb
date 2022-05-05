@@ -26,8 +26,8 @@ class MainUI
     init_gui
     @search_ui = SearchUI.new @builder
     @search_ui.entry.grab_focus
-    CastUI.instance.init @builder.get_object 'cast ListBox'
     EncounterUI.instance.init @builder.get_object 'encounter ListBox'
+    CastUI.instance.init @builder.get_object 'cast ListBox'
     invalidate_encounter_summary
     $stdout.puts "MainUI#initialize"
   end

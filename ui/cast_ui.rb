@@ -5,7 +5,6 @@ require_relative './encounter_ui'
 class CastUI < AbstractCharacterListUI
 
   def init widget
-    Game.instance.cast.compact!
     super widget, Game.instance.cast, CastUI::MemberRow
     widget.set_sort_func {|a,b|
       if a.character.is_pc != b.character.is_pc
@@ -46,7 +45,7 @@ class CastUI::MemberRow < AbstractCharacterRow
       evt_box.set_visible true
       box.add evt_box
       evt_box.signal_connect('button-press-event') do |widget|
-        MainUI.instance.set_character @character
+        activate(widget)
       end
     end
     # Make label
@@ -69,9 +68,9 @@ class CastUI::MemberRow < AbstractCharacterRow
       button.set_tooltip_text 'Ctrl+E'
       button.signal_connect('toggled') do |widget|
         if widget.active?
-          EncounterUI.instance.add @character
-        else
-          EncounterUI.instance.remove @character
+        #   EncounterUI.instance.add @character
+        # else
+        #   EncounterUI.instance.remove @character
         end
       end
       box.add button
@@ -88,7 +87,7 @@ class CastUI::MemberRow < AbstractCharacterRow
     end
     # Add signals
     signal_connect('activate') do |widget|
-      MainUI.instance.set_character @character
+      activate(widget)
     end
     signal_connect('key-press-event') do |widget, event|
       case event.keyval
@@ -97,6 +96,11 @@ class CastUI::MemberRow < AbstractCharacterRow
       when Gdk::Keyval::KEY_e
         @encounter_toggle.clicked
       end
+    end
+
+    def activate(widget)
+      require 'pry'; binding.pry
+      MainUI.instance.set_character @character
     end
   end
 end

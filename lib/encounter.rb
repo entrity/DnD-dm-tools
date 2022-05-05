@@ -6,13 +6,16 @@ class Encounter
   extend Forwardable
   include Enumerable
 
-  attr_reader :cast, :initiative_order
-  def_delegators :cast, :<<, :delete, :each, :includes?
+  attr_reader :pcs, :npcs, :initiative_order
+  def_delegators :npcs, :<<, :delete, :each, :includes?
 
-  def initialize cast=nil
-    @cast = SortedSet.new cast
+  def initialize game_pcs=nil
+    @pcs = SortedSet.new game_pcs
+    @npcs = SortedSet.new
     @initiative_order = {}
   end
+
+  def add_pc character; pcs.add(character); end
 
   # Compute CR based on the XP for this encounter
   def cr; cr_for_xp(xp); end
@@ -27,7 +30,7 @@ class Encounter
     difficulties = [EASY, MEDIUM, HARD, DEADLY]
     difficulties.map do |difficulty|
       # Compute party's XP threshold for given difficulty
-      xp_threshold = get_pcs.sum {|pc| Table['xp-thresholds-by-character-level.tsv'][pc.level.to_i-1][difficulty-1].to_i }
+      xp_threshold = pcs.sum {|pc| Table['xp-thresholds-by-character-level.tsv'][pc.level.to_i-1][difficulty-1].to_i }
       self.class.cr_for_xp(xp_threshold)
     end
   end
@@ -48,25 +51,18 @@ class Encounter
     end
   end
 
-  def get_pcs
-    cast.select {|c| c.is_pc }
-  end
-
-  def get_npcs
-    cast.select {|c| !c.is_pc }
-  end
-
   def initiative_for character; @initiative_order[character].to_i; end
 
   def hoard
     Treasure.hoard cr
   end
 
-  def remove character; @cast.delete character; end
+  def remove character; npcs.delete? character; end
+
+  def remove_pc character; pcs.delete? character; end
 
   def roll_npcs_initiative
-    cast.each do |char|
-      next if char.is_pc
+    npcs.each do |char|
       value = Roll.new("d20 + #{char.mod char.dex}").value
       set_initiative(char, value)
     end
@@ -80,8 +76,8 @@ class Encounter
 
   # XP earned from encounter
   def xp
-    xp_sum = get_npcs.sum {|c| xp_for_cr[c.cr] }
-    xp_sum * xp_multiplier(get_npcs&.length.to_i)
+    xp_sum = npcs.sum {|c| xp_for_cr[c.cr] }
+    xp_sum * xp_multiplier(npcs&.length.to_i)
   rescue => ex
     require 'pry'; binding.pry
   end
@@ -98,6 +94,7 @@ class Encounter
 
   # Create a random encounter
   def self.random party, difficulty, terrain, opts={}
+    raise "not implemented"
     enc = new party
     cr = opts[:cr] || enc.cr_for_party(difficulty)
     cr /= multiplier(opts[:n]) if opts[:n]
@@ -119,7 +116,7 @@ class Encounter
       z ||= a
       n = (a..z).to_a.sample
     end
-    (1..n).each {|i| enc.cast << Monster.new.load_open5e(monster_attrs) }
+    (1..n).each {|i| enc.npcs << Monster.new.load_open5e(monster_attrs) }
     enc
   end
 

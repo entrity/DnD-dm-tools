@@ -6,7 +6,7 @@ class AbstractCharacterListUI
   extend Forwardable
   include Singleton
 
-  def_delegators :'Game.instance.encounter', :include?
+  def_delegators :@game_members, :include?
 
   def init widget, game_members, row_klass
     @widget = widget
@@ -20,9 +20,9 @@ class AbstractCharacterListUI
     reload
   end
 
-  def add character, set=nil
+  def add character
     unless character.nil? || @members[character]
-      (set||game_members) << character
+      game_members << character
       @members[character] = true
       reload
       true
@@ -46,13 +46,15 @@ class AbstractCharacterListUI
   end
 
   def reload
-    children.each {|child| @widget.remove(child) }
+    @widget.children.each {|child| @widget.remove(child) }
     game_members.each {|c| @widget.add @row_klass.new(c) }
     @widget.invalidate_sort
+  rescue => ex
+    require 'pry'; binding.pry
   end
 
-  def remove character, set=nil
-    if (set||game_members).delete? character
+  def remove character
+    if game_members.delete? character
       @members.delete character
       reload
       true
