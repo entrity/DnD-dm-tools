@@ -140,28 +140,6 @@
                         <property name="can_focus">False</property>
                       </object>
                     </child>
-                    <child>
-                      <object class="GtkRadioMenuItem" id="view-cast MenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">_Cast</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_as_radio">True</property>
-                        <signal name="toggled" handler="toggle_cast_v_encounters" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkRadioMenuItem" id="view-encounters MenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Encounter_s</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_as_radio">True</property>
-                        <property name="group">view-cast MenuItem</property>
-                        <signal name="toggled" handler="toggle_cast_v_encounters" swapped="no"/>
-                      </object>
-                    </child>
                   </object>
                 </child>
               </object>
@@ -398,12 +376,6 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Recents</property>
                         <property name="use_underline">True</property>
-                        <child type="submenu">
-                          <object class="GtkMenu" id="encounters-list Menu">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
@@ -705,53 +677,6 @@
                         <property name="position">1</property>
                       </packing>
                     </child>
-                    <child>
-                      <object class="GtkBox" id="encounters Box">
-                        <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Encounters</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkScrolledWindow">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="shadow_type">in</property>
-                            <child>
-                              <object class="GtkViewport">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkListBox" id="encounters ListBox">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
                   </object>
                   <packing>
                     <property name="resize">True</property>
@@ -798,21 +723,6 @@
                         <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="label">Ne_w encounter</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="use_underline">True</property>
-                        <signal name="clicked" handler="new_encounter" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
                       </packing>
                     </child>
                   </object>

@@ -6,7 +6,6 @@ require_relative '../lib/game'
 require_relative '../lib/util'
 require_relative './cast_ui'
 require_relative './encounter_ui'
-require_relative './encounters_ui'
 require_relative './console'
 require_relative './file_io'
 require_relative './markup'
@@ -29,7 +28,6 @@ class MainUI
     @search_ui.entry.grab_focus
     CastUI.instance.init @builder.get_object 'cast ListBox'
     EncounterUI.instance.init @builder.get_object 'encounter ListBox'
-    EncountersUI.instance.init @builder.get_object 'encounters ListBox'
     invalidate_encounter_summary
     $stdout.puts "MainUI#initialize"
   end
@@ -55,11 +53,6 @@ class MainUI
     EOF
   end
 
-  def new_encounter
-    enc = Encounter.new Game.instance.cast.select(&:is_pc)
-    EncountersUI.instance.load enc
-  end
-
   def on_copy_to_cast_activated _widget
     copy_selection_to CastUI.instance
   end
@@ -77,7 +70,6 @@ class MainUI
     @search_ui.entry.grab_focus
     CastUI.instance.init @builder.get_object 'cast ListBox'
     EncounterUI.instance.init @builder.get_object 'encounter ListBox'
-    EncountersUI.instance.init @builder.get_object 'encounters ListBox'
     invalidate_encounter_summary
     $stdout.puts "MainUI#refresh"
   end
@@ -144,7 +136,6 @@ class MainUI
     @window.override_font ::Pango::FontDescription.new "20px"
     @window.titlebar.set_show_close_button true
     @dice_console = DiceConsole.create @builder.get_object('dice console input'), @builder.get_object('dice console output')
-    @encounters_list = @builder.get_object('encounters-list Menu')
     # Exit on close window
     @window.signal_connect("destroy") { Gtk.main_quit }
     # cf. https://riptutorial.com/gtk3/example/16426/simple-binding-to-a-widget-s-key-press-event
@@ -223,13 +214,6 @@ class MainUI
 
   def on_terrain_changed trigger
     if iter = trigger.active_iter
-    end
-  end
-
-  def toggle_cast_v_encounters trigger
-    case trigger.label
-    when '_Cast'; @builder.get_object('cast Box').set_visible(trigger.active?)
-    else; @builder.get_object('encounters Box').set_visible(trigger.active?)
     end
   end
 

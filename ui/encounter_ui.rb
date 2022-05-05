@@ -17,7 +17,6 @@ class EncounterUI < AbstractCharacterListUI
     cast = Game.instance.encounter.cast
     if super(character, cast)
       MainUI.instance.invalidate_encounter_summary
-      EncountersUI.instance.update_name Game.instance.encounter
     end
   end
 
