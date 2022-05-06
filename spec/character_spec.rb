@@ -1,7 +1,7 @@
 require 'spec_helper.rb'
 
 describe Pc do
-  let(:pc) { Pc.new 'Alain', 3 }
+  let(:pc) { Pc.new 'Alain', 'cleric', 3 }
 
   describe '#dup' do
     it 'works' do

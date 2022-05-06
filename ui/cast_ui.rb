@@ -1,6 +1,7 @@
 require 'gtk3'
 require_relative './abstract_character_list_ui'
 require_relative './encounter_ui'
+require 'pango'
 
 class CastUI < AbstractCharacterListUI
 
@@ -54,7 +55,7 @@ class CastUI::MemberRow < AbstractCharacterRow
       label.set_xalign 0.0
       label.set_hexpand true
       label.set_visible true
-      label.set_ellipsize Pango::EllipsizeMode::END
+      label.set_ellipsize ::Pango::EllipsizeMode::END
       evt_box.add label
     end
     reset_name_text

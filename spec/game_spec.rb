@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Game do
   subject { Game.instance.tap do |game|
-    game.cast.push Pc.new 'jack', 3
-    game.cast.push Pc.new 'jill', 4
+    game.cast.add Pc.new 'jack', 3
+    game.cast.add Pc.new 'jill', 4
   end }
 
   describe '#dump' do
