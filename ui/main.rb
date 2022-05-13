@@ -47,7 +47,6 @@ class MainUI
       "#{arr.first} #{cr}"
     }.join(' / ')
     @encounter_summary.set_markup <<~EOF
-      Encounter
       XP #{encounter.xp.to_i} / CR #{colored_difficulty difficulty, encounter.cr}
       #{difficulties}
     EOF
