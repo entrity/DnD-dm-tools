@@ -46,7 +46,7 @@ class AbstractCharacterListUI
   end
 
   def reload
-    @widget.children.each {|child| @widget.remove(child) }
+    @widget.children.each {|child| child.destroy }
     game_members.each {|c| @widget.add @row_klass.new(c) }
     @widget.invalidate_sort
   rescue => ex

@@ -113,7 +113,7 @@ class EncounterUI::MemberRow < AbstractCharacterRow
         i = ui.children.index { |c| c.character == @character }
         ui.remove @character
         next_i = [i, ui.children.length-1].min
-        ui.children[next_i].grab_focus
+        ui.children[next_i]&.grab_focus
       end
       box.add button
     end
