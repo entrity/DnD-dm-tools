@@ -20,7 +20,7 @@ class Character
   include Markup
 
   attr_accessor :is_pc
-  attr_accessor :name, :type, :subtype,
+  attr_accessor :name, :type, :subtype, :url,
     :hp, :proficiency, :max_hp, :temp_hp, :ac,
     :damage_vulnerabilities, :damage_resistances, :damage_immunities,
     :condition_immunities,
@@ -114,6 +114,7 @@ class Character
     @proficiency = nil
     @skills = Skills.new dict.values_at(*%w[acrobatics animal_handling arcana athletics deception history insight intimidation investigation medicine nature perception performance persuasion religion sleight_of_hand stealth survival])
     dict.fetch('skills').each { |k,v| @skills[k] = v }
+    @url = "https://open5e.com/monsters/#{ dict['slug'] }"
     self
   end
 

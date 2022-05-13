@@ -63,6 +63,9 @@ class BuilderView < Gtk::Box
   end
 
   def labeled label, value, opts={}
+    unless value.nil? || value.is_a?(String)
+      value = value.inspect.gsub(/(^\[)|(\]$)/, '')
+    end
     '%s %s' % [gray(label), value] if opts.fetch(:always, value.presence)
   end
 

@@ -91,7 +91,7 @@ class CharacterView < BuilderView
     klass_txt = klass if klass != name
     small_txt = [lvl_txt, klass_txt].compact.join(" ")
     markup = <<~EOF
-      <big><a href="https://open5e.com/monsters/#{@dict['slug']}">#{name}</a></big>
+      <big><a href="#{@character.url}">#{name}</a></big>
       <small> #{small_txt}</small>
     EOF
     set 'name Label', markup.gsub(/\n/, '')
@@ -99,17 +99,18 @@ class CharacterView < BuilderView
 
   def set_stats
     labels = obj('stats FlowBox').children.map {|x| x.children.first }
-    markup = ->(lbl, key) {
-      val = @dict[key]
+    markup = ->(lbl) {
+      key = lbl.downcase.to_sym
+      val = @character.attrs[key]
       mod = ((val.to_i - 10) / 2).floor
       "%s\n%s (%s)" % [gray(lbl), val, mod]
     }
-    labels.shift.set_markup markup.call("STR", 'strength')
-    labels.shift.set_markup markup.call("DEX", 'dexterity')
-    labels.shift.set_markup markup.call("CON", 'constitution')
-    labels.shift.set_markup markup.call("INT", 'strength')
-    labels.shift.set_markup markup.call("WIS", 'wisdom')
-    labels.shift.set_markup markup.call("CHA", 'charisma')
+    labels.shift.set_markup markup.("STR")
+    labels.shift.set_markup markup.("DEX")
+    labels.shift.set_markup markup.("CON")
+    labels.shift.set_markup markup.("INT")
+    labels.shift.set_markup markup.("WIS")
+    labels.shift.set_markup markup.("CHA")
   end
 
 end
